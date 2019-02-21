@@ -73,7 +73,13 @@ public class Game extends Application {
 	}
 		
 	public void start(Stage stage) throws IOException {
-		runGame();
+		this.plateau = new Board(2,2, 2,8,5);
+		this.gamers=this.plateau.gamers;
+		this.nb_round = nb_round;
+		plateau = this.plateau;
+		gamers = this.gamers;
+		nb_round = this.nb_round;
+		
 		double largeur = 697;
 		double hauteur = 520;
 		Color[] liste_colors = {Color.BLUE,Color.RED,Color.GREEN,Color.PURPLE,Color.YELLOW,Color.ORANGE,Color.PINK,Color.LIGHTGREEN};
@@ -88,29 +94,97 @@ public class Game extends Application {
 	    GraphicsContext gc = canvas.getGraphicsContext2D();
         System.out.println(Game.plateau.toString());
         //Test
-        TextField textField = new TextField();
-        Button button = new Button("Cliquez!");
-        button.setOnAction(action -> {
-            System.out.println(textField.getText());
-        });
-        HBox hbox = new HBox(textField,button);
-        group.getChildren().add(hbox);
+        //TextField textField = new TextField();
+        //Button button = new Button("Cliquez!");
+        //button.setOnAction(action -> {
+            //System.out.println(textField.getText());
+        //});
+        //HBox hbox = new HBox(textField,button);
+        //group.getChildren().add(hbox);
+        // Début ajout
+		Scanner un = new Scanner(System.in);
+		this.plateau = new Board(2,2, 2,8,5);
+		this.gamers=this.plateau.gamers;
+		this.nb_round = nb_round;
+        //Fin ajout
         Territory[][] displayTerritories = Game.plateau.territories;
         List<Sprite> rectangles = new ArrayList<Sprite>();
+        for(int x=0;x<displayTerritories.length;x++) {
+        	for(int y=0;y<displayTerritories[0].length;y++) {
+        		Sprite tempsprite = new Sprite(50*x,50*y,50,50,liste_colors[displayTerritories[y][x].player.id]);
+        		rectangles.add(tempsprite);
+        		tempsprite.render(gc);
+        	}
+        }
+        stage.show();
         //Fin initialisation
-        AnimationTimer animation = new AnimationTimer() {
-    		public void handle(long arg0) {
-    	        for(int x=0;x<displayTerritories.length;x++) {
-    	        	for(int y=0;y<displayTerritories[0].length;y++) {
-    	        		Sprite tempsprite = new Sprite(50*x,50*y,50,50,liste_colors[displayTerritories[y][x].player.id]);
-    	        		rectangles.add(tempsprite);
-    	        		tempsprite.render(gc);
-    	        	}
-    	        }
-    		    stage.show();
-    		}
-        };
-	    animation.start();
+        Thread thread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				Runnable updater = new Runnable() {
+
+					@Override
+					public void run() {
+						System.out.println("UPDATER");
+						// TODO Auto-generated method stub
+						for (int j = 0; j < gamers.length; j++) {
+							//gestion du tour du joueur j
+							if(!plateau.has_winner()) {
+								int xd; int yd; int xa; int ya;
+								System.out.println( "\n" + "Joueur " + (j+1) + " : phase d'attaque");
+								System.out.println(plateau);
+								do {
+									System.out.println("Joueur " + (j+1));
+									System.out.println("(format d'input : x y )");
+									System.out.print("Territoire de depart :");
+									xd = un.nextInt(); yd = un.nextInt()	;
+									System.out.print("Territoire cible : ");
+									xa = un.nextInt()	; ya = un.nextInt();
+								} while( ! gamers[j].canFight(plateau.territories[yd][xd], plateau.territories[ya][xa]));	
+								gamers[j].fightGlobal(plateau.territories[yd][xd], plateau.territories[ya][xa]);
+							}
+						}
+						plateau.update();
+						System.out.println("Fin du round, gain de des");
+						nb_round -- ;
+
+					}	
+				};
+				while (nb_round > 0 && !plateau.has_winner() ) {
+					try {
+						Thread.sleep(10000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					Platform.runLater(updater);
+			        for(int x=0;x<displayTerritories.length;x++) {
+			        	for(int y=0;y<displayTerritories[0].length;y++) {
+					        List<Sprite> rectangles = new ArrayList<Sprite>();
+			        		Sprite tempsprite = new Sprite(50*x,50*y,50,50,liste_colors[displayTerritories[y][x].player.id]);
+			        		rectangles.add(tempsprite);
+			        		tempsprite.render(gc);
+			        	}
+			        }
+			        try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+				}
+			}
+        	
+        	
+        	
+        });
+        thread.setDaemon(true);
+        thread.start();
+        stage.show();
+
 
 	}
 	
