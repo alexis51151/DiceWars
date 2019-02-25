@@ -133,6 +133,7 @@ public class Game extends Application {
 							System.out.print("Territoire cible : ");
 						}
 						else if (k ==3){
+							System.out.println("Test");
 						}
 			        });
 				}
@@ -156,11 +157,11 @@ public class Game extends Application {
 							toPrint += "Territoire de depart :";
 							//System.out.println(toPrint);		
 							
-						if (k==3) {
+						if (k==4) {
 							if (gamers[z].canFight(plateau.territories[xy[1]][xy[0]], plateau.territories[xy[3]][xy[2]])) {
 								gamers[z].fightGlobal(plateau.territories[xy[1]][xy[0]], plateau.territories[xy[3]][xy[2]]);
 								Platform.runLater(new Runnable() {
-
+									
 									@Override
 									public void run() {
 								        Territory[][] displayTerritories = Game.plateau.territories;
