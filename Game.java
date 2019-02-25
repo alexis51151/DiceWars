@@ -1,88 +1,47 @@
 package game;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-import javafx.stage.Stage;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.scene.Group;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.scene.control.Labeled;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
-import javafx.scene.*;
-import javafx.animation.*;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 
-import java.io.IOException;
-import java.util.*;
-
-
-import javafx.event.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
-import 	javafx.scene.Scene.*;
-import javafx.application.*;
 public class Game extends Application {
 	public static Board plateau;
 	Player[] gamers;
 	int nb_round=5;
-	
+	Color[] liste_colors = {Color.BLUE,Color.RED,Color.GREEN,Color.PURPLE,Color.YELLOW,Color.ORANGE,Color.PINK,Color.LIGHTGREEN};
+	// Displaying UI
 	  public static void main(String[] args) {
 		    launch(args);
 		  }
-
-	/**public Game(int colonnes, int lignes, int gamers_number, int N, int max_dices, int nb_round) {
-		// TODO Auto-generated constructor stub
-		System.out.println("test");
-		this.plateau = new Board(colonnes,lignes, gamers_number, N, max_dices);
-		this.gamers=this.plateau.gamers;
-		this.nb_round = nb_round;
-		}
-*/
-	public void runGame() {
-		Scanner un = new Scanner(System.in);
+	  
+	  
+	public ReturnClass initialize(Stage stage) {
+		// Initiliazing the board, with its players 
 		this.plateau = new Board(2,2, 2,8,5);
 		this.gamers=this.plateau.gamers;
 		this.nb_round = nb_round;
-		while (this.nb_round > 0 && !plateau.has_winner() ) {
-			for (int j = 0; j < gamers.length; j++) {
-				//gestion du tour du joueur j
-				if(!plateau.has_winner()) {
-					int xd; int yd; int xa; int ya;
-					System.out.println( "\n" + "Joueur " + (j+1) + " : phase d'attaque");
-					System.out.println(plateau);
-					do {
-						System.out.println("Joueur " + (j+1));
-						System.out.println("(format d'input : x y )");
-						System.out.print("Territoire de depart :");
-						xd = un.nextInt(); yd = un.nextInt()	;
-						System.out.print("Territoire cible : ");
-						xa = un.nextInt()	; ya = un.nextInt();
-					} while( ! gamers[j].canFight(plateau.territories[yd][xd], plateau.territories[ya][xa]));	
-					gamers[j].fightGlobal(plateau.territories[yd][xd], plateau.territories[ya][xa]);
-				}
-			}
-			this.plateau.update();
-			System.out.println("Fin du round, gain de des");
-			this.nb_round -- ;
-		}
-		System.out.println("fin du jeu");
-		un.close();
-	}
-		
-	public void start(Stage stage) throws IOException {
-		this.plateau = new Board(2,2, 2,8,5);
-		this.gamers=this.plateau.gamers;
-		this.nb_round = nb_round;
-		plateau = this.plateau;
-		gamers = this.gamers;
-		nb_round = this.nb_round;
-		
+		// Basic UI parameters : window's height/width, title, and javafx's wrappers for handling scenes
 		double largeur = 697;
 		double hauteur = 520;
-		Color[] liste_colors = {Color.BLUE,Color.RED,Color.GREEN,Color.PURPLE,Color.YELLOW,Color.ORANGE,Color.PINK,Color.LIGHTGREEN};
 		stage.setTitle("DiceWars");
 		stage.setAlwaysOnTop(true);
 	    Group group = new Group();
@@ -92,21 +51,23 @@ public class Game extends Application {
 	    group.getChildren().add(canvas);
 	    stage.setResizable(false);
 	    GraphicsContext gc = canvas.getGraphicsContext2D();
-        System.out.println(Game.plateau.toString());
-        //Test
-        //TextField textField = new TextField();
-        //Button button = new Button("Cliquez!");
-        //button.setOnAction(action -> {
-            //System.out.println(textField.getText());
-        //});
-        //HBox hbox = new HBox(textField,button);
-        //group.getChildren().add(hbox);
-        // Début ajout
-		Scanner un = new Scanner(System.in);
-		this.plateau = new Board(2,2, 2,8,5);
-		this.gamers=this.plateau.gamers;
-		this.nb_round = nb_round;
-        //Fin ajout
+        // Text to interact with the background tasks
+	    final Text text = new Text();    	    
+	    text.setY(120); 		
+	    group.getChildren().add(text);
+        TextField textField = new TextField();
+        // Button to catch interactions when asked who to attack
+        Button button = new Button("Valider");
+        button.setOnAction(action -> {
+            String answer = textField.getText();
+            //text.setText(answer);
+            textField.setText("");
+        });
+        HBox hbox = new HBox(textField,button);
+
+        hbox.setLayoutY(140);         
+        group.getChildren().add(hbox);
+        // Initializing territories' display
         Territory[][] displayTerritories = Game.plateau.territories;
         List<Sprite> rectangles = new ArrayList<Sprite>();
         for(int x=0;x<displayTerritories.length;x++) {
@@ -116,77 +77,125 @@ public class Game extends Application {
         		tempsprite.render(gc);
         	}
         }
-        stage.show();
-        //Fin initialisation
-        Thread thread = new Thread(new Runnable() {
-
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				Runnable updater = new Runnable() {
-
-					@Override
-					public void run() {
-						System.out.println("UPDATER");
-						// TODO Auto-generated method stub
-						for (int j = 0; j < gamers.length; j++) {
-							//gestion du tour du joueur j
-							if(!plateau.has_winner()) {
-								int xd; int yd; int xa; int ya;
-								System.out.println( "\n" + "Joueur " + (j+1) + " : phase d'attaque");
-								System.out.println(plateau);
-								do {
-									System.out.println("Joueur " + (j+1));
-									System.out.println("(format d'input : x y )");
-									System.out.print("Territoire de depart :");
-									xd = un.nextInt(); yd = un.nextInt()	;
-									System.out.print("Territoire cible : ");
-									xa = un.nextInt()	; ya = un.nextInt();
-								} while( ! gamers[j].canFight(plateau.territories[yd][xd], plateau.territories[ya][xa]));	
-								gamers[j].fightGlobal(plateau.territories[yd][xd], plateau.territories[ya][xa]);
-							}
-						}
-						plateau.update();
-						System.out.println("Fin du round, gain de des");
-						nb_round -- ;
-
-					}	
-				};
-				while (nb_round > 0 && !plateau.has_winner() ) {
-					try {
-						Thread.sleep(10000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					Platform.runLater(updater);
-			        for(int x=0;x<displayTerritories.length;x++) {
-			        	for(int y=0;y<displayTerritories[0].length;y++) {
-					        List<Sprite> rectangles = new ArrayList<Sprite>();
-			        		Sprite tempsprite = new Sprite(50*x,50*y,50,50,liste_colors[displayTerritories[y][x].player.id]);
-			        		rectangles.add(tempsprite);
-			        		tempsprite.render(gc);
-			        	}
-			        }
-			        try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
-				}
-			}
-        	
-        	
-        	
-        });
-        thread.setDaemon(true);
-        thread.start();
-        stage.show();
-
-
+        // Wrapper of all data needed for further procedures
+        ReturnClass returnClass = new ReturnClass(text,button,textField,gc,stage);
+		return returnClass;
 	}
 	
+	public class ReturnClass{
+		Text text;
+		Button button;
+		TextField textField;
+		GraphicsContext gc;
+		Stage stage;
+		
+		ReturnClass(Text text, Button button,TextField textField, GraphicsContext gc, Stage stage){
+			this.text =text;
+			this.button = button;
+			this.textField = textField;
+			this.gc = gc;
+			this.stage =stage;
+		}
+	}
 	
+	// Thread that will look whether conditions are set to play a turn
+	public class TaskDisplay extends Task{
+		Text text;
+		int[] xy = {0,0,0,0};
+		Button button;
+		TextField textField;
+		GraphicsContext gc;
+		Stage stage;
+		int k; //Counting the inputs for attack/defense
+		TaskDisplay(Text text, Button button,TextField textField, GraphicsContext gc, Stage stage){
+			this.text = text;
+			this.button = button;
+			this.textField = textField;
+			this.gc = gc;
+			this.stage = stage;
+		}
+		@Override
+		protected Object call() throws Exception {
+			String str = "";
+			Platform.runLater(new Runnable() {
+				@Override
+				public  void run() {
+					
+					// TODO Auto-generated method stub
+					button.setOnAction(action -> {
+						String answer = textField.getText();
+						System.out.println(answer);
+			            xy[k] = Integer.parseInt(answer);
+			            text.setText(answer);
+			            textField.setText("");
+			            k +=1;
+						if (k==2) {
+							System.out.print("Territoire cible : ");
+						}
+						else if (k ==3){
+						}
+			        });
+				}
+				
+			});
+			while (nb_round  > 0 && !plateau.has_winner()) {
+				for (int j = 0; j < gamers.length; j++) {
+					//gestion du tour du joueur j
+					final int z = j;
+					if(!plateau.has_winner()) {
+					
+							String toPrint = "";
+							toPrint +=  "\n" + "Joueur " + (z+1) + " : phase d'attaque";
+							toPrint += "\n";
+							toPrint += plateau;
+							toPrint += "\n";
+							toPrint += "Joueur " + (z+1);
+							toPrint += "\n";
+							toPrint += "(format d'input : x y )";
+							toPrint += "\n";
+							toPrint += "Territoire de depart :";
+							//System.out.println(toPrint);		
+							
+						if (k==3) {
+							if (gamers[z].canFight(plateau.territories[xy[1]][xy[0]], plateau.territories[xy[3]][xy[2]])) {
+								gamers[z].fightGlobal(plateau.territories[xy[1]][xy[0]], plateau.territories[xy[3]][xy[2]]);
+								Platform.runLater(new Runnable() {
+
+									@Override
+									public void run() {
+								        Territory[][] displayTerritories = Game.plateau.territories;
+								        List<Sprite> rectangles = new ArrayList<Sprite>();
+								        for(int x=0;x<displayTerritories.length;x++) {
+								        	for(int y=0;y<displayTerritories[0].length;y++) {
+								        		Sprite tempsprite = new Sprite(50*x,50*y,50,50,liste_colors[displayTerritories[y][x].player.id]);
+								        		rectangles.add(tempsprite);
+								        		tempsprite.render(gc);
+								        	}
+								        }
+								        stage.show();
+									}
+									
+								});
+							}
+							else {
+								k = 0;
+							}
+
+						}
+				
+					}
+				}
+			};
+
+			return null;
+		}
+		
+	}
+	@Override
+	public void start(Stage stage) throws Exception {
+		ReturnClass returnClass = initialize(stage);
+		TaskDisplay task = new TaskDisplay(returnClass.text,returnClass.button,returnClass.textField,returnClass.gc,returnClass.stage);
+		new Thread(task).start();
+		stage.show();
+	}
 }
