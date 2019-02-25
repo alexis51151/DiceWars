@@ -123,6 +123,9 @@ public class Game extends Application {
 					
 					// TODO Auto-generated method stub
 					button.setOnAction(action -> {
+						if (k==4) {
+							k = 0;
+						}
 						String answer = textField.getText();
 						System.out.println(answer);
 			            xy[k] = Integer.parseInt(answer);
@@ -131,9 +134,6 @@ public class Game extends Application {
 			            k +=1;
 						if (k==2) {
 							System.out.print("Territoire cible : ");
-						}
-						else if (k ==3){
-							System.out.println("Test");
 						}
 			        });
 				}
@@ -186,6 +186,7 @@ public class Game extends Application {
 				
 					}
 				}
+			plateau.update();
 			};
 
 			return null;
