@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class Leaf {
-	int[] action; // Action à effectuer
-	Territory[][] board; // Etat du tableau après l'action
+	int[] action; // Action ï¿½ effectuer
+	Territory[][] board; // Etat du tableau aprï¿½s l'action
 	Double mark; // Note de l'action
 	ArrayList<Leaf> next; // Plateaux possibles pour la suite
-	Leaf previous; // Plateau dont est issue cette possibilité
+	Leaf previous; // Plateau dont est issue cette possibilitï¿½
 	
 	public Leaf(Leaf previous,int[] action, Territory[][] board, Double mark){
 		this.previous = previous;

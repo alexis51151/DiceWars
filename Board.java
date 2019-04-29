@@ -128,7 +128,7 @@ public class Board { // pour le moment, que des territoires carres
 				copy[i][j] = (this.territories[i][j]).copy();
 			}
 		}
-		return copy;//copie des territoires (n'altère pas les territoires d'origine)
+		return copy;//copie des territoires (n'altï¿½re pas les territoires d'origine)
 	}
 	
 }

@@ -32,6 +32,7 @@ public class Game extends Application {
 	String[] liste_colors_string = {"bleu","rouge","vert","violet","jaune","orange","rose","vert clair"};
 	static Canvas canvas;
 	static IA ia;
+	static IA iabis;
 	// Displaying UI
 	  public static void main(String[] args) {
 		  	
@@ -41,13 +42,14 @@ public class Game extends Application {
 	  
 	public ReturnClass initialize(Stage stage) {
 		// Initiliazing the board, with its players 
-		Game.plateau = new Board(3,2,2,8,5);
+		Game.plateau = new Board(3,4,2,10,5);
 		Game.gamers=Game.plateau.gamers;
 		Game.nb_round = 5;
 		Game.ia = new IA(0,0);
+		Game.iabis = new IA(1,1);
 		// Basic UI parameters : window's height/width, title, and javafx's wrappers for handling scenes
-		double largeur = 697;
-		double hauteur = 520;
+		double largeur = 997;
+		double hauteur = 720;
 		stage.setTitle("DiceWars");
 		stage.setAlwaysOnTop(true);
 	    Scene scene = new Scene(group);
@@ -86,7 +88,7 @@ public class Game extends Application {
         		// Displaying the number of dices for each territory
         		Text temptext = new Text(325+50*x,230+50*y,Integer.toString(displayTerritories[y][x].dices));
         		// Displaying who's the turn of 
-        		Text idjoueurtext = new Text(300,190,"Tour du joueur n°"+this.idjoueur + "(" + liste_colors_string[this.idjoueur] +")");
+        		Text idjoueurtext = new Text(300,190,"Tour du joueur nï¿½"+this.idjoueur + "(" + liste_colors_string[this.idjoueur] +")");
         		group.getChildren().add(idjoueurtext);
         		group.getChildren().add(temptext);
         	}
@@ -162,8 +164,17 @@ public class Game extends Application {
 							//System.out.println(toPrint); // Yet to be added to UI (in a text area)
 						// When all inputs have been set by one player
 						if(idjoueur==0) { // Here we call our IA; We are supposing for now that IA is player 0 
-							ia.play2(this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
+							System.out.println("TOUR DE IA 0");
+							ia.play(this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
 						}
+						
+						//Random IA
+					    if(idjoueur==1) { // Here we call our random IA; We are supposing for now that IA is player 0 
+							System.out.println("TOUR DE IA 1");
+							iabis.playrandom(this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
+						}
+						
+						
 						if (k==4) {
 							if (gamers[idjoueur].canFight(plateau.territories[xy[1]][xy[0]], plateau.territories[xy[3]][xy[2]])) {
 								gamers[idjoueur].fightGlobal(plateau.territories[xy[1]][xy[0]], plateau.territories[xy[3]][xy[2]]);
@@ -181,7 +192,7 @@ public class Game extends Application {
 						        			 }
 						        		}
 						        		// Displaying who's the turn of 
-						        		Text idjoueurtext = new Text(300,190,"Tour du joueur n°"+(idjoueur+1) + "(" + liste_colors_string[(idjoueur+1)] +")");
+						        		Text idjoueurtext = new Text(300,190,"Tour du joueur nï¿½"+(idjoueur+1) + "(" + liste_colors_string[(idjoueur+1)] +")");
 						        		group.getChildren().add(idjoueurtext);
 						        		 
 
@@ -204,14 +215,14 @@ public class Game extends Application {
 						}
 					}
 					if (plateau.has_winner()) {
-						System.out.println("Bravo au joueur "+ (idjoueur-1) + " qui a gagné!");
+						System.out.println("Bravo au joueur "+ (idjoueur-1) + " qui a gagnï¿½!");
 				        // Deleting previous text boxes (prevent writing over previous dices numbers...)
 		        		 for(Iterator<Node> it=group.getChildren().iterator(); it.hasNext();) {
 		        			 if(it.next() instanceof Text) {
 		        				it.remove();
 		        			 }
 		        		}
-			        	Text idjoueurtext = new Text(300,190,"Le joueur n°"+(idjoueur-1)+"a gagné!");
+			        	Text idjoueurtext = new Text(300,190,"Le joueur nï¿½"+(idjoueur-1)+"a gagnï¿½!");
 			        	group.getChildren().add(idjoueurtext);
 				        System.out.println("test");
 				        stage.show();
