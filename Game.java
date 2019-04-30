@@ -169,11 +169,11 @@ public class Game extends Application {
 						}
 						
 						//Random IA
-					    if(idjoueur==1) { // Here we call our random IA; We are supposing for now that IA is player 0 
-							System.out.println("TOUR DE IA 1");
-							iabis.playrandom(this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
-						}
-						
+//					    if(idjoueur==1) { // Here we call our random IA; We are supposing for now that IA is player 0 
+//							System.out.println("TOUR DE IA 1");
+//							iabis.playrandom(this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
+//						}
+//						
 						
 						if (k==4) {
 							if (gamers[idjoueur].canFight(plateau.territories[xy[1]][xy[0]], plateau.territories[xy[3]][xy[2]])) {
