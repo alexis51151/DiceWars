@@ -107,7 +107,7 @@ public class Player {
 	 public double value( Player gamer_2, double alpha,LinkedList<Territory> territories1,LinkedList<Territory> territories2) { //plus c'est proche de 0 : dÃ©savantagÃ©, plus c'est proche de 1 : avantagÃ©
 			double inter_val_1 = this.intermediate_value(alpha,territories1);
 			double inter_val_2 = gamer_2.intermediate_value(alpha,territories2);
-			return sigmoid(inter_val_1 - inter_val_2) ;   // retourne la valeur associée à la position du gamer_1
+			return sigmoid(inter_val_1 - inter_val_2) ;   // retourne la valeur associï¿½e ï¿½ la position du gamer_1
 		}// on pourrait, dans un cas avec 3+ joueurs, choisir la valeur de la position de gamer_1 comme la valeur min(k dans l'ensemble des joueurs ennemis){value(gamer_1, gamer_k)}
 	 
  
@@ -118,32 +118,6 @@ public class Player {
 			inter_value += -Math.pow(territory.dices-alpha,territory.dices-alpha)+10 ;
 		}
 		return inter_value;
-	}// je prÃ©cise quels territories, car ça pourrait être d'autre plateaux que celui immédiat du joueur (coups Ã  l'avance de l'ia)
+	}// je prÃ©cise quels territories, car ï¿½a pourrait ï¿½tre d'autre plateaux que celui immï¿½diat du joueur (coups Ã  l'avance de l'ia)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

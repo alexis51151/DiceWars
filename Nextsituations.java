@@ -4,15 +4,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class Nextsituations {   //permet de lister les dénouements possibles du tour d'un joueur
+public class Nextsituations {   //permet de lister les dï¿½nouements possibles du tour d'un joueur
 	 ArrayList<int[]> actions;
 	 ArrayList<Territory[][]> possible_nextboards;
 	 ArrayList<Double> transition_chances;
 	 Player gamer;
 	 
-
 		
-	 public Nextsituations(Player gamer, Board plateau) { //Renvoie les actions et plateaux résultants possibles avec leurs "probabilités" (transition)
+	 public Nextsituations(Player gamer, Board plateau) { //Renvoie les actions et plateaux rï¿½sultants possibles avec leurs "probabilitÃ©s" (transition)
 		// TODO Auto-generated constructor stub
 		 this.gamer = gamer;
 			ArrayList<Territory[][]> next_positions = new ArrayList<Territory[][]>();
@@ -28,12 +27,12 @@ public class Nextsituations {   //permet de lister les dénouements possibles du 
 								k = myTerritory.ligne;
 								l=myTerritory.colonne;
 								actions.add(actions_tab(l,k,j,i,1)); //action avec 1 pour victoire
-								actions.add(actions_tab(l,k,j,i,0)); //action avec 0 pour défaite
+								actions.add(actions_tab(l,k,j,i,0)); //action avec 0 pour dï¿½faite
 								next_positions.add(next_victory(plateau.copy(),k,l,i,j));
 								next_positions.add(next_defeat(plateau.copy(), k, l));
 								transi_victoire = transition(plateau.copy(),k,l,i,j);
 								transitions.add(transi_victoire); //transition pour victoire
-								transitions.add(1-transi_victoire); //transition pour défaite : pas obligatoire
+								transitions.add(1-transi_victoire); //transition pour dï¿½faite : pas obligatoire
 							}
 					}	
 				}
@@ -47,7 +46,7 @@ public class Nextsituations {   //permet de lister les dénouements possibles du 
 	 
 		public Territory[][] next_defeat(Territory[][] copy, int myline, int mycolumn) {
 			copy[myline][mycolumn].dices = 1;
-			return copy; //modifs pour le cas de défaite
+			return copy; //modifs pour le cas de dï¿½faite
 		}
 		
 		public Territory[][] next_victory(Territory[][] copy,int myline, int mycolumn, int hisline, int hiscolumn) {
@@ -59,14 +58,14 @@ public class Nextsituations {   //permet de lister les dénouements possibles du 
 		}
 
 		
-		public Double transition(Territory[][] copy,int myline, int mycolumn, int hisline, int hiscolumn) { // calcule la proba de victoire (donc d'atteindre cet état next_win_)
+		public Double transition(Territory[][] copy,int myline, int mycolumn, int hisline, int hiscolumn) { // calcule la proba de victoire (donc d'atteindre cet ï¿½tat next_win_)
 			int mydice = copy[myline][mycolumn].dices-1;
 			int hisdice = copy[hisline][hiscolumn].dices;
-			//l'espérance du lancer d'1 dé isolé est de 7/2
-			Double Emydice = Math.pow(7/2, mydice-1);//espérance de notre lancer
-			Double Ehisdice = Math.pow(7/2, hisdice);//espérance de son lancer
-			Double transition = 1/(1+Math.exp(Ehisdice-Emydice));  // ligne discutable : fonction sigmoid : renvoie une probabilité associée à Emydice-Ehisdice
-			return transition; //estimation discutable des chances d'accéder au tableau (A modifier : on mettra les vrais probas, car on peut les calculer)
+			//l'espï¿½rance du lancer d'1 dï¿½ isolï¿½ est de 7/2
+			Double Emydice = Math.pow(7/2, mydice-1);//espï¿½rance de notre lancer
+			Double Ehisdice = Math.pow(7/2, hisdice);//espï¿½rance de son lancer
+			Double transition = 1/(1+Math.exp(Ehisdice-Emydice));  // ligne discutable : fonction sigmoid : renvoie une probabilitï¿½ associï¿½e ï¿½ Emydice-Ehisdice
+			return transition; //estimation discutable des chances d'accï¿½der au tableau (A modifier : on mettra les vrais probas, car on peut les calculer)
 		}
 		
 		
@@ -143,13 +142,3 @@ public class Nextsituations {   //permet de lister les dénouements possibles du 
 		
 		
 }
-		
-
-
-
-
-
-
-
-
-

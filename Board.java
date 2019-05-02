@@ -132,8 +132,3 @@ public class Board { // pour le moment, que des territoires carres
 	}
 	
 }
-
-
-
-
-

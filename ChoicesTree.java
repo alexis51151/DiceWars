@@ -8,6 +8,9 @@ public class ChoicesTree {
 	int numjoueur;
 	int[] action_retenue;
 	public Double best_grade;
+	Float proba;
+	Float seuil_proba = 0.1f;
+	float[][] probaMatrix = Probas.ProbaMatrix(8);
 	// Caractéristiques du plateau initial (on ne s'intéresse qu'au tableau territories par la suite)
 	public int gamers_number;
 	public int colonnes;
@@ -49,17 +52,27 @@ public class ChoicesTree {
 		Iterator<Double> it_grades = grades.iterator();
 		Iterator<int[]> it_actions = actions_possibilities.iterator();
 		Iterator<Territory[][]> it_boards = boards.iterator();
+		// On considère au max 8 dés sur un territoire
 		if (profondeur != 0) {
 			while (it_actions.hasNext()) { // Création des feuilles associées au plateau de la feuille en paramtre de notre fonction
 				int[] action_possibility = it_actions.next();
 				double grade  =it_grades.next();
 				Territory[][] board = it_boards.next();
-				Leaf new_leaf = new Leaf(leaf,action_possibility,board,grade);
-				leaf.next.add(new_leaf);
-				nb_leaves +=1;
-				//System.out.println(new_leaf.toString_boards());
-				System.out.println(new_leaf.action_toString());
-				AddLeaves(new_leaf,profondeur-1,(parite+1)%2);
+				// On cherche le nb de dés sur territoires de départ et d'arrivée pour calculer la probabilité du nouveau plateau
+				int k = board[action_possibility[1]][action_possibility[0]].dices;
+				int n = board[action_possibility[3]][action_possibility[2]].dices;
+				
+				// On calcule la probabilité d'avoir ce plateau (utilisation d'une méthode d'estimateur statistique)
+				float proba = probaMatrix[k][n]; // Pas d'erreur car on a au moins un dé sur un territoire
+
+				if (proba > seuil_proba) {
+					Leaf new_leaf = new Leaf(leaf,action_possibility,board,grade);
+					leaf.next.add(new_leaf);
+					nb_leaves +=1;
+					//System.out.println(new_leaf.toString_boards());
+					System.out.println(new_leaf.action_toString());
+					AddLeaves(new_leaf,profondeur-1,(parite+1)%2);
+				}
 			}
 		}
 		else {
@@ -71,12 +84,16 @@ public class ChoicesTree {
 		}
 	}
 	
+
 	public String toString_actions() {
 		String chaine = "";
-		chaine += " myabs :"+this.action_retenue[0] + " myord :"+this.action_retenue[1] +" hisabs :"+this.action_retenue[2] +" hisord :"+this.action_retenue[3] + "\n"+"note :"+this.best_grade + "\n"+"\n";  
+		if (this.action_retenue != null ) {
+			chaine += " myabs :"+this.action_retenue[0] + " myord :"+this.action_retenue[1] +" hisabs :"+this.action_retenue[2] +" hisord :"+this.action_retenue[3] + "\n"+"note :"+this.best_grade + "\n"+"\n";  
+		}
+		else {
+			chaine += "Pas d'action retenue : veuillez modifier le seuil de proba";
+		}
 		return(chaine);
 	}
 		
 }
-
-
