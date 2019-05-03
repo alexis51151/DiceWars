@@ -32,22 +32,30 @@ public class Game extends Application {
 	String[] liste_colors_string = {"bleu","rouge","vert","violet","jaune","orange","rose","vert clair"};
 	static Canvas canvas;
 	static IA ia;
+	static IA iabis;
+	static IA iatris;
 	// Displaying UI
 	  public static void main(String[] args) {
 		  	
 		    launch(args);
 		  }
 	  
+
+	  
 	  
 	public ReturnClass initialize(Stage stage) {
 		// Initiliazing the board, with its players 
-		Game.plateau = new Board(3,2,2,8,5);
+		int dices_max = 5;
+		double[][] probas_matrix = Probas.ProbaMatrix(dices_max) ;
+		Game.plateau = new Board(7,2,2,20,dices_max);
 		Game.gamers=Game.plateau.gamers;
 		Game.nb_round = 5;
 		Game.ia = new IA(0,0);
+		Game.iabis = new IA(1,1);  // d√©finition √† revoir pour bis,qui peut gr√¢ce √† la suite jouer en 1 er
+		Game.iatris = new IA(1,2);
 		// Basic UI parameters : window's height/width, title, and javafx's wrappers for handling scenes
-		double largeur = 697;
-		double hauteur = 520;
+		double largeur = 997;
+		double hauteur = 720;
 		stage.setTitle("DiceWars");
 		stage.setAlwaysOnTop(true);
 	    Scene scene = new Scene(group);
@@ -70,7 +78,7 @@ public class Game extends Application {
             textField.setText("");
         });
         HBox hbox = new HBox(textField,button);
-        hbox.setLayoutY(330);  
+        hbox.setLayoutY(530);  
         hbox.setLayoutX(275);
         group.getChildren().add(hbox);
         // Initializing territories' display
@@ -86,13 +94,13 @@ public class Game extends Application {
         		// Displaying the number of dices for each territory
         		Text temptext = new Text(325+50*x,230+50*y,Integer.toString(displayTerritories[y][x].dices));
         		// Displaying who's the turn of 
-        		Text idjoueurtext = new Text(300,190,"Tour du joueur n∞"+this.idjoueur + "(" + liste_colors_string[this.idjoueur] +")");
+        		Text idjoueurtext = new Text(300,190,"Tour du joueur "+this.idjoueur + "(" + liste_colors_string[this.idjoueur] +")");
         		group.getChildren().add(idjoueurtext);
         		group.getChildren().add(temptext);
         	}
         }
         // Wrapper of all data needed for further procedures
-        ReturnClass returnClass = new ReturnClass(text,button,textField,gc,stage);
+        ReturnClass returnClass = new ReturnClass(probas_matrix, text,button,textField,gc,stage);
 		return returnClass;
 	}
 	
@@ -103,13 +111,15 @@ public class Game extends Application {
 		TextField textField;
 		GraphicsContext gc;
 		Stage stage;
+		double[][] probas_matrix;
 		// Standard initialization
-		ReturnClass(Text text, Button button,TextField textField, GraphicsContext gc, Stage stage){
+		ReturnClass(double[][] probas_matrix,Text text, Button button,TextField textField, GraphicsContext gc, Stage stage){
 			this.text =text;
 			this.button = button;
 			this.textField = textField;
 			this.gc = gc;
 			this.stage =stage;
+			this.probas_matrix = probas_matrix;
 		}
 	}
 	
@@ -122,13 +132,16 @@ public class Game extends Application {
 		GraphicsContext gc;
 		Stage stage;
 		int k; //Counting the inputs for attack/defense
+		double[][] probas_matrix;
 		// Standard initialization with arguments that will be 
-		TaskDisplay(Text text, Button button,TextField textField, GraphicsContext gc, Stage stage){
+		TaskDisplay(double[][] probas_matrix, Text text, Button button,TextField textField, GraphicsContext gc, Stage stage){
 			this.text = text;
 			this.button = button;
 			this.textField = textField;
 			this.gc = gc;
 			this.stage = stage;
+			this.probas_matrix = probas_matrix;
+			
 		}
 		@Override
 		// Method called at every UI update
@@ -154,20 +167,43 @@ public class Game extends Application {
 				idjoueur = 0;
 				while (idjoueur < gamers.length) {
 					//gestion du tour du joueur j
+					//System.out.println("idjoueur :" + idjoueur);
 					if(!plateau.has_winner()&& plateau.hasAttack(gamers[idjoueur])) {
 	
 							String toPrint = "";
 							toPrint +=  "\n" + "Joueur " + (idjoueur+1) + " : phase d'attaque";
 							toPrint += "\n";
+							
 							//System.out.println(toPrint); // Yet to be added to UI (in a text area)
 						// When all inputs have been set by one player
 						if(idjoueur==0) { // Here we call our IA; We are supposing for now that IA is player 0 
-							ia.play2(this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
+							System.out.println("TOUR DE IA basique");
+							ia.play( probas_matrix, this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
 						}
+////						
+						//Random IA  : transformer le 0 en 1 et le 1 en 2  pour faire jouer l'ia random en 2 eme
+//					    if(idjoueur==0) { // Here we call our random IA; We are supposing for now that IA is player 0 
+//							int indice = 0;
+//					    	System.out.println("TOUR DE IA random");
+//							 if (plateau.hasAttack(plateau.gamers[indice])) {
+//								 iabis.playrandom(1 + indice, probas_matrix, this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
+//							 }
+//						}
+//					    
+					    if(idjoueur==1) { //supposition IA evolved is player 0 
+							System.out.println("TOUR DE IA evolved");
+							 if (plateau.hasAttack(plateau.gamers[1])) {
+								 iatris.playevolved(probas_matrix, 3, this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
+							 }
+						}
+//						
+						
+//						
+						
 						if (k==4) {
 							if (gamers[idjoueur].canFight(plateau.territories[xy[1]][xy[0]], plateau.territories[xy[3]][xy[2]])) {
 								gamers[idjoueur].fightGlobal(plateau.territories[xy[1]][xy[0]], plateau.territories[xy[3]][xy[2]]);
-								idjoueur += 1;
+							       idjoueur += 1;
 								Platform.runLater(new Runnable() {
 									@Override
 									// UI update done by run Method
@@ -181,7 +217,7 @@ public class Game extends Application {
 						        			 }
 						        		}
 						        		// Displaying who's the turn of 
-						        		Text idjoueurtext = new Text(300,190,"Tour du joueur n∞"+(idjoueur+1) + "(" + liste_colors_string[(idjoueur+1)] +")");
+						        		Text idjoueurtext = new Text(300,190,"Tour du joueur "+(idjoueur+1) + "(" + liste_colors_string[(idjoueur+1)] +")");
 						        		group.getChildren().add(idjoueurtext);
 						        		 
 
@@ -196,6 +232,7 @@ public class Game extends Application {
 								        	}
 								        }
 								        stage.show();
+								 
 									}
 									
 								});
@@ -204,14 +241,14 @@ public class Game extends Application {
 						}
 					}
 					if (plateau.has_winner()) {
-						System.out.println("Bravo au joueur "+ (idjoueur-1) + " qui a gagnÈ!");
+						System.out.println("Bravo au joueur "+ (idjoueur-1) + " qui a gagn√©!");
 				        // Deleting previous text boxes (prevent writing over previous dices numbers...)
 		        		 for(Iterator<Node> it=group.getChildren().iterator(); it.hasNext();) {
 		        			 if(it.next() instanceof Text) {
 		        				it.remove();
 		        			 }
 		        		}
-			        	Text idjoueurtext = new Text(300,190,"Le joueur n∞"+(idjoueur-1)+"a gagnÈ!");
+			        	Text idjoueurtext = new Text(300,190,"Le joueur "+(idjoueur-1)+"a gagn√©!");
 			        	group.getChildren().add(idjoueurtext);
 				        System.out.println("test");
 				        stage.show();
@@ -220,6 +257,7 @@ public class Game extends Application {
 			// Update the number of dices after a turn
 			plateau.update();
 			};
+			System.out.println("PLUS DE TOURS RESTANTS!");
 			return null;
 		}
 		
@@ -227,7 +265,7 @@ public class Game extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 		ReturnClass returnClass = initialize(stage);
-		TaskDisplay task = new TaskDisplay(returnClass.text,returnClass.button,returnClass.textField,returnClass.gc,returnClass.stage);
+		TaskDisplay task = new TaskDisplay(returnClass.probas_matrix, returnClass.text,returnClass.button,returnClass.textField,returnClass.gc,returnClass.stage);
 		// Starting the thread that updates the game (UI and raw data)
 		new Thread(task).start();
 		stage.show();

@@ -14,6 +14,7 @@ public class Board { // pour le moment, que des territoires carres
 	public int number_territory;
 	public int[] players_territories; // nb territoires par players : Scores
 	public Player[] gamers; // liste des joueurs
+	
 
 	public Board(int colonnes, int lignes, int gamers_number, int N, int max_dices) { //N = nbr de des par joueur au debut
 		this.max_dices = max_dices;
@@ -128,7 +129,7 @@ public class Board { // pour le moment, que des territoires carres
 				copy[i][j] = (this.territories[i][j]).copy();
 			}
 		}
-		return copy;//copie des territoires (n'altère pas les territoires d'origine)
+		return copy;//copie des territoires (n'altï¿½re pas les territoires d'origine)
 	}
 	
 }

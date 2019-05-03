@@ -106,19 +106,37 @@ public class Player {
      }
 	 public double value( Player gamer_2, double alpha,LinkedList<Territory> territories1,LinkedList<Territory> territories2) { //plus c'est proche de 0 : désavantagé, plus c'est proche de 1 : avantagé
 			double inter_val_1 = this.intermediate_value(alpha,territories1);
+			//System.out.println(this.id);
 			double inter_val_2 = gamer_2.intermediate_value(alpha,territories2);
-			return sigmoid(inter_val_1 - inter_val_2) ;   // retourne la valeur associ�e � la position du gamer_1
+			//System.out.println(gamer_2.id);
+			double diff = inter_val_1 - inter_val_2;
+			//System.out.println(diff);
+			return sigmoid((diff)) ;   // retourne la valeur associ�e � la position du gamer_1
 		}// on pourrait, dans un cas avec 3+ joueurs, choisir la valeur de la position de gamer_1 comme la valeur min(k dans l'ensemble des joueurs ennemis){value(gamer_1, gamer_k)}
 	 
  
 	
+//	 public double valueevolved( Player gamer_2, double alpha,LinkedList<Territory> territories1,LinkedList<Territory> territories2) { //plus c'est proche de 0 : désavantagé, plus c'est proche de 1 : avantagé
+//			double inter_val_1 = this.intermediate_value(alpha,territories1);
+//			System.out.println("fdsffqsd "+inter_val_1 );
+//			double inter_val_2 = gamer_2.intermediate_value(alpha,territories2);
+//			System.out.println("fdsffqsd "+inter_val_2 );
+//			double diff = inter_val_1 - inter_val_2;
+//			return (diff);
+//		  // retourne la valeur associ�e � la position du gamer_1
+//		}// on pourrait, dans un cas avec 3+ joueurs, choisir la valeur de la position de gamer_1 comme la valeur min(k dans l'ensemble des joueurs ennemis){value(gamer_1, gamer_k)}
+//	 
+
 	double intermediate_value(double alpha, LinkedList<Territory> territories) { //valeur intermédiaire servant à calculer la valeur d'une situation pour un joueur. Alpha permet de choisir quel nombre de dés est l'optimum à réaliser (avant le gain de tour... donc pas maximum)
 		double inter_value = 0;
+		double inter = 0;
 		for (Territory territory : territories) {
-			inter_value += -Math.pow(territory.dices-alpha,territory.dices-alpha)+10 ;
+			inter = -Math.pow(territory.dices-alpha,territory.dices-alpha)+10 ;
+			inter_value += inter ;
 		}
+		//System.out.println("inter "+inter_value );
 		return inter_value;
-	}// je précise quels territories, car �a pourrait �tre d'autre plateaux que celui imm�diat du joueur (coups à l'avance de l'ia)
+	}// je précise quels territories, car �a pourrait �tre d'autre plateaux que celui imm�diat du joueur (coups à l'avance de l'ia)
 
 }
 

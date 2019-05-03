@@ -4,13 +4,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class Actions_graded {  //renvoie une liste des actions possibles, avec les notes (grâce à nextsituations)
+public class Actions_graded {  //renvoie une liste des actions possibles, avec les notes (grï¿½ce ï¿½ nextsituations)
 	 ArrayList<int[]> actions;
 	 ArrayList<Double> grades;
 	 Player gamer;
 	 Player ennemy;
-	 
-	 
+	 	 
 		public LinkedList<Territory> linked_list_territories(Territory[][] territories , Player gamer){ 
 			LinkedList<Territory> linked_territories = new LinkedList<Territory>() ;
 			for (Territory[] line : territories) {
@@ -25,7 +24,7 @@ public class Actions_graded {  //renvoie une liste des actions possibles, avec l
 		
 	 
 
-	 Actions_graded(Nextsituations nextsituations, Player gamer2){ //note la meilleure action face à l'adversaire
+	 Actions_graded(Nextsituations nextsituations, Player gamer2){ //note la meilleure action face ï¿½ l'adversaire
 		 ArrayList<int[]> actions = new ArrayList<int[]>();
 		 ArrayList<Double> grades = new ArrayList<Double>();
 		 Player gamer = nextsituations.gamer;
@@ -44,6 +43,7 @@ public class Actions_graded {  //renvoie une liste des actions possibles, avec l
 				LinkedList<Territory> territories1  = linked_list_territories(plateau , gamer );
 				LinkedList<Territory> territories2  = linked_list_territories(plateau , gamer2 );
 				note = nextsituations.gamer.value(gamer2, 4, territories1, territories2)*proba_transi;
+				//System.out.println("-------NOTE------------  " +note);
 				actions.add(action);
 				grades.add(note);
 			}

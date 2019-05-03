@@ -15,8 +15,7 @@ public class test {
 				}
 				return chaine;
 			}
-	
-	
+		
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -35,9 +34,11 @@ public class test {
 		System.out.println("ACTION RETENUE"+ "\n");
 		System.out.println(tata.tab_toString(choix));*/
 		ChoicesTree choicestree = new ChoicesTree(plateau,1);
-		System.out.println(choicestree.racine.toString_boards()); // Affiche le plateau de départ
-		choicestree.AddLeaves(choicestree.racine, 3, 1);
-		System.out.println(choicestree.nb_leaves); // Nb de plateaux intermédiaires
+		int dices_max = 8;
+		double[][] probas = Probas.ProbaMatrix( dices_max);
+		System.out.println(choicestree.racine.toString_boards()); // Affiche le plateau de dï¿½part
+		choicestree.AddLeaves(5, probas, choicestree.racine, 3, 1);
+		System.out.println(choicestree.nb_leaves); // Nb de plateaux intermï¿½diaires
 		System.out.println(choicestree.toString_actions());
 	}
 

@@ -16,6 +16,7 @@ public class Territory {
 		String chaine = "Coordonnees : ( "+this.colonne +" ; " + this.ligne+" )"+ "\n"+"Dices : "+this.dices +"\n" +"Gamer Id : "+this.player.id;
 		return chaine;
 	}
+
 	public Territory copy() {
 		Territory copy = new Territory(0, 0);
 		copy.ligne = this.ligne;
