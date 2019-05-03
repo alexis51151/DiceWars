@@ -82,7 +82,7 @@ public class IA {
 	public void play2(TextField textField,Button button, Board plateau, GraphicsContext gc, Stage stage,TaskDisplay tsk) {
 		// Main interaction method to fill the forms
 		ChoicesTree choicestree = new ChoicesTree(plateau,1);
-		System.out.println(choicestree.racine.toString_boards()); // Affiche le plateau de d�part
+		//System.out.println(choicestree.racine.toString_boards()); // Affiche le plateau de d�part
 		choicestree.AddLeaves(choicestree.racine, 3, 1);
 		int[] choix = choicestree.action_retenue;
 		textField.setText(Integer.toString(choix[0]));

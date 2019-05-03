@@ -19,21 +19,30 @@ public class Nextsituations {   //permet de lister les dénouements possibles du
 			ArrayList<int[]> actions = new ArrayList<int[]>();
 			int k = 0;
 			int l = 0;
+			int save = 0;
 			//Double transi_victoire = 0.0;
 			for(Territory myTerritory :gamer.territories) {			
-					for (int i = 0; i < plateau.territories.length; i++) {
-						for (int j = 0; j < plateau.territories[0].length; j++) {
-							if (gamer.canFight(myTerritory, plateau.territories[i][j])) { // Pour chaque territoire qu'on peut attaquer ce tour-ci
-								k = myTerritory.ligne;
-								l=myTerritory.colonne;
-								actions.add(actions_tab(l,k,j,i,1)); //action avec 1 pour victoire
-								actions.add(actions_tab(l,k,j,i,0)); //action avec 0 pour défaite
-								next_positions.add(next_victory(plateau.copy(),k,l,i,j));
-								next_positions.add(next_defeat(plateau.copy(), k, l));
-								//transi_victoire = transition(plateau.copy(),k,l,i,j);
-								//transitions.add(transi_victoire); //transition pour victoire
-								//transitions.add(1-transi_victoire); //transition pour défaite : pas obligatoire
-							}
+				for (int i = 0; i < plateau.territories.length; i++) {
+					for (int j = 0; j < plateau.territories[0].length; j++) {
+						if (gamer.canFight(myTerritory, plateau.territories[i][j]) ) { // Pour chaque territoire qu'on peut attaquer ce tour-ci
+							k = myTerritory.ligne;
+							l=myTerritory.colonne;								
+
+							actions.add(actions_tab(l,k,j,i,1)); //action avec 1 pour victoire
+							actions.add(actions_tab(l,k,j,i,0)); //action avec 0 pour défaite
+//							if (myTerritory.dices == 1) {
+//								System.out.println("-------------------PROBLEM-----------------");
+//							}
+							save = myTerritory.dices;
+							//System.out.println("before : " +save);
+							next_positions.add(next_victory(save,plateau,k,l,i,j));
+							next_positions.add(next_defeat(plateau, k, l));
+							//transi_victoire = transition(plateau.copy(),k,l,i,j);
+							//transitions.add(transi_victoire); //transition pour victoire
+							//transitions.add(1-transi_victoire); //transition pour défaite : pas obligatoire
+
+
+						}
 					}	
 				}
 			}
@@ -44,13 +53,29 @@ public class Nextsituations {   //permet de lister les dénouements possibles du
 		
 	
 	 
-		public Territory[][] next_defeat(Territory[][] copy, int myline, int mycolumn) {
+		public Territory[][] next_defeat(Board plateau, int myline, int mycolumn) {
+			Territory[][] copy = plateau.copy();
 			copy[myline][mycolumn].dices = 1;
 			return copy; //modifs pour le cas de défaite
 		}
 		
-		public Territory[][] next_victory(Territory[][] copy,int myline, int mycolumn, int hisline, int hiscolumn) {
+		public Territory[][] next_victory(int save, Board plateau,int myline, int mycolumn, int hisline, int hiscolumn) {
+			plateau.territories[myline][mycolumn].dices = save;
+			//int lala = plateau.territories[myline][mycolumn].dices;
+			Territory[][] copy = plateau.copy();
+			//int lili = plateau.territories[myline][mycolumn].dices;
+//			for (int i = 0; i < copy.length; i++) {
+//				for (int j = 0; j < copy[0].length; j++) {
+//					copy[i][j].dices = plateau.territories[i][j].dices;					
+//				}
+//			}
 			copy[hisline][hiscolumn].dices = copy[myline][mycolumn].dices -1;
+//			if (copy[hisline][hiscolumn].dices == 0) {
+//				System.out.println("lala :"+lala);
+//				System.out.println("lili :"+lili);
+//				System.out.println("myline :"+ myline +" mycolumn :" + mycolumn + " hisline :" + hisline +  " hiscolumn :" + hiscolumn);
+//				System.out.println(plateau.territories[myline][mycolumn].dices + "---> copy ----> "+ copy[myline][mycolumn].dices);
+//			}
 			copy[hisline][hiscolumn].player = copy[myline][mycolumn].player;
 			copy[myline][mycolumn].dices = 1;
 			
@@ -140,5 +165,23 @@ public class Nextsituations {   //permet de lister les dénouements possibles du
 		 return chaine;
 	 }
 		
+	 
+	 public String toString_dices() {
+		 String chaine = "";
+		 for (Territory[][] territories : this.possible_nextboards) {
+			 for (Territory[] line : territories) {
+				 for(Territory ter : line) {
+					 if (ter != null) {
+					 chaine += ter.dices + "  ";
+					 } 
+					 else {
+						 System.out.println("bouh");
+					 }
+				 }
+			 }
+			 chaine += "<<<<<<<<<<<<<<<<<<<<<<<<<<<" + "\n" + "\n";
+		 }
+		 return chaine;
+	 }
 		
 }

@@ -42,9 +42,9 @@ public class Game extends Application {
 	  
 	public ReturnClass initialize(Stage stage) {
 		// Initiliazing the board, with its players 
-		Game.plateau = new Board(3,2,2,10,5);
+		Game.plateau = new Board(4,3,2,20,5);
 		Game.gamers=Game.plateau.gamers;
-		Game.nb_round = 5;
+		Game.nb_round = 15;
 		Game.ia = new IA(0,0);
 		Game.iabis = new IA(1,1);
 		// Basic UI parameters : window's height/width, title, and javafx's wrappers for handling scenes
@@ -153,6 +153,7 @@ public class Game extends Application {
 			
         });
 			while (nb_round  > 0 && !plateau.has_winner()) {
+				System.out.println("----TOURS RESTANTS : "+nb_round + " ------");
 				idjoueur = 0;
 				while (idjoueur < gamers.length) {
 					//gestion du tour du joueur j
@@ -165,14 +166,14 @@ public class Game extends Application {
 						// When all inputs have been set by one player
 						if(idjoueur==0) { // Here we call our IA; We are supposing for now that IA is player 0 
 							System.out.println("TOUR DE IA 0");
-							ia.play(this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
+							ia.play2(this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
 						}
 						
 						//Random IA
-//					    if(idjoueur==1) { // Here we call our random IA; We are supposing for now that IA is player 0 
-//							System.out.println("TOUR DE IA 1");
-//							iabis.playrandom(this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
-//						}
+					    if(idjoueur==1) { // Here we call our random IA; We are supposing for now that IA is player 0 
+							System.out.println("TOUR DE IA 1");
+							iabis.playrandom(this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
+						}
 //						
 						
 						if (k==4) {
@@ -192,7 +193,7 @@ public class Game extends Application {
 						        			 }
 						        		}
 						        		// Displaying who's the turn of 
-						        		Text idjoueurtext = new Text(300,190,"Tour du joueur n�"+(idjoueur+1) + "(" + liste_colors_string[(idjoueur+1)] +")");
+						        		Text idjoueurtext = new Text(300,190,"Tour du joueur "+(idjoueur+1) + "(" + liste_colors_string[(idjoueur+1)] +")");
 						        		group.getChildren().add(idjoueurtext);
 						        		 
 
@@ -222,7 +223,7 @@ public class Game extends Application {
 		        				it.remove();
 		        			 }
 		        		}
-			        	Text idjoueurtext = new Text(300,190,"Le joueur n�"+(idjoueur-1)+"a gagné!");
+			        	Text idjoueurtext = new Text(300,190,"Le joueur "+(idjoueur-1)+"a gagné!");
 			        	group.getChildren().add(idjoueurtext);
 				        System.out.println("test");
 				        stage.show();
@@ -230,6 +231,7 @@ public class Game extends Application {
 				}
 			// Update the number of dices after a turn
 			plateau.update();
+			nb_round -- ;
 			};
 			return null;
 		}

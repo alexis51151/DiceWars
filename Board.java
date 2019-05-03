@@ -126,9 +126,12 @@ public class Board { // pour le moment, que des territoires carres
 		for (int i = 0; i < this.lignes; i++) {
 			for (int j = 0; j < this.colonnes; j++) {
 				copy[i][j] = (this.territories[i][j]).copy();
-			}
+//				if (copy[i][j].dices != this.territories[i][j].dices ){
+//				System.out.println("--------- "+this.territories[i][j].dices + " copy --> " +copy[i][j].dices + " --------------" );}
 		}
-		return copy;//copie des territoires (n'altère pas les territoires d'origine)
+		}
+		
+		return copy;//copie des territoires (n'altï¿½re pas les territoires d'origine)
 	}
 	
 }

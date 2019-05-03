@@ -23,6 +23,7 @@ public class Territory {
 		copy.colonne = this.colonne;
 		copy.player = this.player;
 		copy.dices = this.dices;
+		//System.out.println( "ter copy :" + copy.dices);
 		return copy;
 	}
 }

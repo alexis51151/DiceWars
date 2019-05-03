@@ -20,7 +20,7 @@ public class test {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		test tata  = new test();
-		Board plateau = new Board(3,2,2,8,5);
+		Board plateau = new Board(8,4,2,30,5);
 		/*///System.out.println("PLATEAU ACTUEL" + "\n");
 	    //System.out.println(plateau.toString());
 		Nextsituations nextsituations = new Nextsituations(plateau.gamers[0], plateau) ;

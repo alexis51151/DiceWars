@@ -49,20 +49,20 @@ public class Player {
 		}
 		else {
 		if(myTerritory.ligne-hisTerritory.ligne ==0) {
-			if (Math.abs(myTerritory.colonne-hisTerritory.colonne)<=1) {
+			if (Math.abs(myTerritory.colonne-hisTerritory.colonne) == 1) {
 				return(true);
 			}
 			else {
-				System.out.println("territoire non-atteignable");
+				//System.out.println("territoire non-atteignable");
 				return(false);
 			}
 		}
 		else if(myTerritory.colonne-hisTerritory.colonne ==0) {
-			if (Math.abs(myTerritory.ligne-hisTerritory.ligne)<=1) {
+			if (Math.abs(myTerritory.ligne-hisTerritory.ligne) ==1) {
 				return(true);
 			}
 			else {
-				System.out.println("territoire non-atteignable");
+				//System.out.println("territoire non-atteignable");
 				return(false);
 			}
 		}
@@ -101,13 +101,14 @@ public class Player {
 	
 	//FONCTIONS UTILES A L'IA
 	
-     public double sigmoid(double x) {
-    	 return 1/(1+Math.exp(x));
-     }
+//     public double sigmoid(double x) {
+//    	 return 1/(1+Math.exp(x));
+//     }
+     
 	 public double value( Player gamer_2, double alpha,LinkedList<Territory> territories1,LinkedList<Territory> territories2) { //plus c'est proche de 0 : désavantagé, plus c'est proche de 1 : avantagé
 			double inter_val_1 = this.intermediate_value(alpha,territories1);
 			double inter_val_2 = gamer_2.intermediate_value(alpha,territories2);
-			return sigmoid(inter_val_1 - inter_val_2) ;   // retourne la valeur associ�e � la position du gamer_1
+			return (inter_val_1 - inter_val_2)/(inter_val_1 + inter_val_2) ;   // retourne la valeur associ�e � la position du gamer_1
 		}// on pourrait, dans un cas avec 3+ joueurs, choisir la valeur de la position de gamer_1 comme la valeur min(k dans l'ensemble des joueurs ennemis){value(gamer_1, gamer_k)}
 	 
  
