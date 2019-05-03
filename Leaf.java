@@ -9,13 +9,15 @@ public class Leaf {
 	Double mark; // Note de l'action
 	ArrayList<Leaf> next; // Plateaux possibles pour la suite
 	Leaf previous; // Plateau dont est issue cette possibilité
+	float probability;
 	
-	public Leaf(Leaf previous,int[] action, Territory[][] board, Double mark){
+	public Leaf(Leaf previous,int[] action, Territory[][] board, Double mark, float probability){
 		this.previous = previous;
 		this.action = action;
 		this.board = board;
 		this.mark = mark;
 		this.next = new ArrayList<Leaf>();
+		this.probability = probability;
 	}
 	
 	 public String toString_boards() {

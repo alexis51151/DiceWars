@@ -4,22 +4,22 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class Nextsituations {   //permet de lister les d�nouements possibles du tour d'un joueur
+public class Nextsituations {   //permet de lister les dénouements possibles du tour d'un joueur
 	 ArrayList<int[]> actions;
 	 ArrayList<Territory[][]> possible_nextboards;
 	 ArrayList<Double> transition_chances;
 	 Player gamer;
 	 
 		
-	 public Nextsituations(Player gamer, Board plateau) { //Renvoie les actions et plateaux r�sultants possibles avec leurs "probabilités" (transition)
+	 public Nextsituations(Player gamer, Board plateau) { //Renvoie les actions et plateaux résultants possibles avec leurs "probabilités" (transition)
 		// TODO Auto-generated constructor stub
 		 this.gamer = gamer;
 			ArrayList<Territory[][]> next_positions = new ArrayList<Territory[][]>();
-			ArrayList<Double> transitions = new ArrayList<Double>();
+			//ArrayList<Double> transitions = new ArrayList<Double>();
 			ArrayList<int[]> actions = new ArrayList<int[]>();
 			int k = 0;
 			int l = 0;
-			Double transi_victoire = 0.0;
+			//Double transi_victoire = 0.0;
 			for(Territory myTerritory :gamer.territories) {			
 					for (int i = 0; i < plateau.territories.length; i++) {
 						for (int j = 0; j < plateau.territories[0].length; j++) {
@@ -27,18 +27,18 @@ public class Nextsituations {   //permet de lister les d�nouements possibles d
 								k = myTerritory.ligne;
 								l=myTerritory.colonne;
 								actions.add(actions_tab(l,k,j,i,1)); //action avec 1 pour victoire
-								actions.add(actions_tab(l,k,j,i,0)); //action avec 0 pour d�faite
+								actions.add(actions_tab(l,k,j,i,0)); //action avec 0 pour défaite
 								next_positions.add(next_victory(plateau.copy(),k,l,i,j));
 								next_positions.add(next_defeat(plateau.copy(), k, l));
-								transi_victoire = transition(plateau.copy(),k,l,i,j);
-								transitions.add(transi_victoire); //transition pour victoire
-								transitions.add(1-transi_victoire); //transition pour d�faite : pas obligatoire
+								//transi_victoire = transition(plateau.copy(),k,l,i,j);
+								//transitions.add(transi_victoire); //transition pour victoire
+								//transitions.add(1-transi_victoire); //transition pour défaite : pas obligatoire
 							}
 					}	
 				}
 			}
 			this.possible_nextboards=next_positions;
-			this.transition_chances = transitions;
+			//this.transition_chances = transitions;
 			this.actions = actions;
 		}
 		
@@ -46,7 +46,7 @@ public class Nextsituations {   //permet de lister les d�nouements possibles d
 	 
 		public Territory[][] next_defeat(Territory[][] copy, int myline, int mycolumn) {
 			copy[myline][mycolumn].dices = 1;
-			return copy; //modifs pour le cas de d�faite
+			return copy; //modifs pour le cas de défaite
 		}
 		
 		public Territory[][] next_victory(Territory[][] copy,int myline, int mycolumn, int hisline, int hiscolumn) {
@@ -61,11 +61,11 @@ public class Nextsituations {   //permet de lister les d�nouements possibles d
 		public Double transition(Territory[][] copy,int myline, int mycolumn, int hisline, int hiscolumn) { // calcule la proba de victoire (donc d'atteindre cet �tat next_win_)
 			int mydice = copy[myline][mycolumn].dices-1;
 			int hisdice = copy[hisline][hiscolumn].dices;
-			//l'esp�rance du lancer d'1 d� isol� est de 7/2
-			Double Emydice = Math.pow(7/2, mydice-1);//esp�rance de notre lancer
-			Double Ehisdice = Math.pow(7/2, hisdice);//esp�rance de son lancer
-			Double transition = 1/(1+Math.exp(Ehisdice-Emydice));  // ligne discutable : fonction sigmoid : renvoie une probabilit� associ�e � Emydice-Ehisdice
-			return transition; //estimation discutable des chances d'acc�der au tableau (A modifier : on mettra les vrais probas, car on peut les calculer)
+			//l'esp�rance du lancer d'1 dé isolé est de 7/2
+			Double Emydice = Math.pow(7/2, mydice-1);//espérance de notre lancer
+			Double Ehisdice = Math.pow(7/2, hisdice);//espérance de son lancer
+			Double transition = 1/(1+Math.exp(Ehisdice-Emydice));  // ligne discutable : fonction sigmoid : renvoie une probabilité associée à Emydice-Ehisdice
+			return transition; //estimation discutable des chances d'accéder au tableau (A modifier : on mettra les vrais probas, car on peut les calculer)
 		}
 		
 		

@@ -36,15 +36,15 @@ public class Player {
 	
 	boolean canFight(Territory myTerritory, Territory hisTerritory) { //pas les diagonales 
 		if(myTerritory.dices <2) {
-			System.out.println("pas assez de des");
+			//System.out.println("pas assez de des");
 			return false;
 		}
 	    else if (myTerritory.player.id != this.id) {
-	    	System.out.println("territoire de depart n'appartient pas au joueur");
+	    	//System.out.println("territoire de depart n'appartient pas au joueur");
 			return false;
 		}
 		else if (this.id == hisTerritory.player.id ) {
-			System.out.println("territoire cible appartenant au joueur");
+			//System.out.println("territoire cible appartenant au joueur");
 			return false;
 		}
 		else {
@@ -67,7 +67,7 @@ public class Player {
 			}
 		}
 		else {
-			System.out.println("probleme autre");
+			//System.out.println("probleme autre");
 			return(false);
 		}
 
@@ -118,6 +118,6 @@ public class Player {
 			inter_value += -Math.pow(territory.dices-alpha,territory.dices-alpha)+10 ;
 		}
 		return inter_value;
-	}// je précise quels territories, car �a pourrait �tre d'autre plateaux que celui imm�diat du joueur (coups à l'avance de l'ia)
+	}// je précise quels territories, car ça pourrait être d'autre plateaux que celui immédiat du joueur (coups à l'avance de l'ia)
 
 }

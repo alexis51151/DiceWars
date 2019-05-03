@@ -34,16 +34,16 @@ public class Actions_graded {  //renvoie une liste des actions possibles, avec l
 		 ArrayList<Territory[][]> possible_nextboards = nextsituations.possible_nextboards;
 		 ArrayList<Double> transition_chances = nextsituations.transition_chances;
 		 Iterator<Territory[][]> it_nextboards = possible_nextboards.iterator();
-		 Iterator<Double> it_transitions = transition_chances.iterator();
+		 //Iterator<Double> it_transitions = transition_chances.iterator();
 		 Iterator<int[]> it_actions = actions_of_nextsituations.iterator();
 		 while (it_actions.hasNext()) {
 			 int[] action = it_actions.next();
 			 Territory[][] plateau = it_nextboards.next();
-			 Double proba_transi = it_transitions.next();
+			 //Double proba_transi = it_transitions.next();
 			 if (action[4] == 1) {
 				LinkedList<Territory> territories1  = linked_list_territories(plateau , gamer );
 				LinkedList<Territory> territories2  = linked_list_territories(plateau , gamer2 );
-				note = nextsituations.gamer.value(gamer2, 4, territories1, territories2)*proba_transi;
+				note = nextsituations.gamer.value(gamer2, 4, territories1, territories2); //*proba_transi si on la prend pas en compte
 				actions.add(action);
 				grades.add(note);
 			}

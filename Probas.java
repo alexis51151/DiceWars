@@ -6,7 +6,7 @@ public class Probas { //calcule la proba de gagner si l'attaquant a k dés au tot
 	float proba;
 	Probas(int k, int n){
 		float proba = 1/4;
-		int iterations = 1000000; 
+		int iterations = 10000; 
 		for (int i = 0; i < iterations; i++) {
 			if (fightWon(k, n)== true) {
 				proba += 1 ;

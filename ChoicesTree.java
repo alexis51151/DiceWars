@@ -8,8 +8,9 @@ public class ChoicesTree {
 	int numjoueur;
 	int[] action_retenue;
 	public Double best_grade;
+	Board auxboard;
 	Float proba;
-	Float seuil_proba = 0.1f;
+	Float seuil_proba = 0f;
 	float[][] probaMatrix = Probas.ProbaMatrix(8);
 	// Caractéristiques du plateau initial (on ne s'intéresse qu'au tableau territories par la suite)
 	public int gamers_number;
@@ -27,7 +28,7 @@ public class ChoicesTree {
 		// Création de l'arbre des possibles plateaux pour le joueur n°numjoueur (algorithme récursif)
 		// Profondeur est la profondeur max (<-> nb de coups d'avance) que l'on prévoit
 		this.numjoueur = numjoueur;
-		this.racine = new Leaf(null,null,plateau.territories,null);
+		this.racine = new Leaf(null,null,plateau.territories,null,1);
 		this.gamers_number = plateau.gamers_number;
 		this.colonnes = plateau.colonnes;
 		this.lignes = plateau.lignes;
@@ -38,14 +39,15 @@ public class ChoicesTree {
 		this.nb_leaves = 0;
 		this.gamers = plateau.gamers;
 		this.best_grade = 0.0;
+		this.auxboard = new Board(this.colonnes,this.lignes,this.gamers_number,this.N,this.max_dices);
+
 		
 	}
 	
 	public void AddLeaves(Leaf leaf,int profondeur,int parite) { // J'ai fait que le cas pour 2 joueurs pour l'instant (à faire : utiliser la parité (initialisée à 1) pour 2 fonctions de coût) 
-		Board auxboard = new Board(colonnes,lignes,gamers_number,N,max_dices);
 		auxboard.territories = leaf.board; //Seul élément du board auquel on s'intéresse ici
 		Nextsituations nextsituations = new Nextsituations(gamers[(numjoueur+parite)%2], auxboard) ; // Pour k joueurs : changer %2 par %k
-		Actions_graded actions_notees = new Actions_graded(nextsituations, gamers[(numjoueur+parite)%2]); 
+		Actions_graded actions_notees = new Actions_graded(nextsituations, gamers[(numjoueur+parite+1)%2]); 
 		ArrayList<int[]> actions_possibilities = actions_notees.actions;
 		ArrayList<Double> grades = actions_notees.grades;
 		ArrayList<Territory[][]> boards = nextsituations.possible_nextboards;
@@ -61,12 +63,16 @@ public class ChoicesTree {
 				// On cherche le nb de dés sur territoires de départ et d'arrivée pour calculer la probabilité du nouveau plateau
 				int k = board[action_possibility[1]][action_possibility[0]].dices;
 				int n = board[action_possibility[3]][action_possibility[2]].dices;
-				
+				if (k==0 || n ==0) {
+					System.out.println("BIZARRE");
+					System.out.println("k: " + k);
+					System.out.println("n: " + n);
+				}
 				// On calcule la probabilité d'avoir ce plateau (utilisation d'une méthode d'estimateur statistique)
-				float proba = probaMatrix[k][n]; // Pas d'erreur car on a au moins un dé sur un territoire
-
-				if (proba > seuil_proba) {
-					Leaf new_leaf = new Leaf(leaf,action_possibility,board,grade);
+				float proba = probaMatrix[k-1][n-1]; // Pas d'erreur car on a au moins un dé sur un territoire
+				if (leaf.probability*proba > seuil_proba) {
+					nb_dices(board);
+					Leaf new_leaf = new Leaf(leaf,action_possibility,board,grade,leaf.probability*proba);
 					leaf.next.add(new_leaf);
 					nb_leaves +=1;
 					//System.out.println(new_leaf.toString_boards());
@@ -79,7 +85,6 @@ public class ChoicesTree {
 			if (leaf.mark > best_grade) {
 				best_grade = leaf.mark;
 				action_retenue = leaf.action;
-				System.out.println("test");
 			}
 		}
 	}
@@ -94,6 +99,14 @@ public class ChoicesTree {
 			chaine += "Pas d'action retenue : veuillez modifier le seuil de proba";
 		}
 		return(chaine);
+	}
+	
+	public static void nb_dices(Territory[][] board) {
+		for(int i =0; i <board.length;i++ ) {
+			for(int j =0; j < board[0].length;j++) {
+				System.out.println("En i="+i + " et j="+j + ", on a : " + board[i][j].dices+ "dés");
+			}
+		}
 	}
 		
 }
