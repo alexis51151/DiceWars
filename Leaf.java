@@ -10,7 +10,7 @@ public class Leaf {
 	ArrayList<Leaf> next; // Plateaux possibles pour la suite
 	Leaf previous; // Plateau dont est issue cette possibilité
 	float probability;
-	
+	int max_dices = 8;
 	public Leaf(Leaf previous,int[] action, Territory[][] board, Double mark, float probability){
 		this.previous = previous;
 		this.action = action;
@@ -43,6 +43,17 @@ public class Leaf {
 		
 		 return chaine;
 	 }
+	 
+		public void update() { // ajout 1 de partout sauf si > max_dices
+			for (Territory[] liste : this.board) {
+				for (Territory ter : liste) {
+					if (ter.dices < this.max_dices) {
+						ter.dices++;
+					}
+				}
+			}
+		}
+
 
 
 

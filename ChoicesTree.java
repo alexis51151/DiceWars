@@ -56,7 +56,7 @@ public class ChoicesTree {
 		Iterator<Territory[][]> it_boards = boards.iterator();
 		// On considère au max 8 dés sur un territoire
 		if (profondeur != 0) {
-			while (it_actions.hasNext()) { // Création des feuilles associées au plateau de la feuille en paramtre de notre fonction
+			while (it_actions.hasNext()) { // Création des feuilles associées au plateau de la feuille en paramètre de notre fonction
 				int[] action_possibility = it_actions.next();
 				double grade  =it_grades.next();
 				Territory[][] board = it_boards.next();
@@ -73,6 +73,7 @@ public class ChoicesTree {
 				if (leaf.probability*proba > seuil_proba) {
 					nb_dices(board);
 					Leaf new_leaf = new Leaf(leaf,action_possibility,board,grade,leaf.probability*proba);
+					new_leaf.update(); // Rajouter les dés pour le tour suivant
 					leaf.next.add(new_leaf);
 					nb_leaves +=1;
 					//System.out.println(new_leaf.toString_boards());
