@@ -15,13 +15,12 @@ public class test {
 				}
 				return chaine;
 			}
-	
-	
+		
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		test tata  = new test();
-		Board plateau = new Board(3,2,2,8,5);
+		Board plateau = new Board(8,4,2,30,5);
 		/*///System.out.println("PLATEAU ACTUEL" + "\n");
 	    //System.out.println(plateau.toString());
 		Nextsituations nextsituations = new Nextsituations(plateau.gamers[0], plateau) ;
@@ -35,10 +34,11 @@ public class test {
 		System.out.println("ACTION RETENUE"+ "\n");
 		System.out.println(tata.tab_toString(choix));*/
 		ChoicesTree choicestree = new ChoicesTree(plateau,1);
-		System.out.println(choicestree.racine.toString_boards()); // Affiche le plateau de départ
+		System.out.println(choicestree.racine.toString_boards()); // Affiche le plateau de dï¿½part
 		choicestree.AddLeaves(choicestree.racine, 3, 1);
-		System.out.println(choicestree.nb_leaves); // Nb de plateaux intermédiaires
 		System.out.println(choicestree.toString_actions());
+		System.out.println(choicestree.nb_leaves); // Nb de plateaux intermÃ©diaires
+
 	}
 
 }

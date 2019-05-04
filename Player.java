@@ -36,38 +36,38 @@ public class Player {
 	
 	boolean canFight(Territory myTerritory, Territory hisTerritory) { //pas les diagonales 
 		if(myTerritory.dices <2) {
-			System.out.println("pas assez de des");
+			//System.out.println("pas assez de des");
 			return false;
 		}
 	    else if (myTerritory.player.id != this.id) {
-	    	System.out.println("territoire de depart n'appartient pas au joueur");
+	    	//System.out.println("territoire de depart n'appartient pas au joueur");
 			return false;
 		}
 		else if (this.id == hisTerritory.player.id ) {
-			System.out.println("territoire cible appartenant au joueur");
+			//System.out.println("territoire cible appartenant au joueur");
 			return false;
 		}
 		else {
 		if(myTerritory.ligne-hisTerritory.ligne ==0) {
-			if (Math.abs(myTerritory.colonne-hisTerritory.colonne)<=1) {
+			if (Math.abs(myTerritory.colonne-hisTerritory.colonne) == 1) {
 				return(true);
 			}
 			else {
-				System.out.println("territoire non-atteignable");
+				//System.out.println("territoire non-atteignable");
 				return(false);
 			}
 		}
 		else if(myTerritory.colonne-hisTerritory.colonne ==0) {
-			if (Math.abs(myTerritory.ligne-hisTerritory.ligne)<=1) {
+			if (Math.abs(myTerritory.ligne-hisTerritory.ligne) ==1) {
 				return(true);
 			}
 			else {
-				System.out.println("territoire non-atteignable");
+				//System.out.println("territoire non-atteignable");
 				return(false);
 			}
 		}
 		else {
-			System.out.println("probleme autre");
+			//System.out.println("probleme autre");
 			return(false);
 		}
 
@@ -75,6 +75,7 @@ public class Player {
 	}
 	
 	void fightGlobal(Territory myTerritory,Territory hisTerritory) {
+		//System.out.println("FIGHT GLOBAL :"+myTerritory.player.id);
 		//if(this.canFight(myTerritory, hisTerritory)) {	//Si je peux combattre
 			if(fightWon(myTerritory,hisTerritory)) {	//Si je gagne, je prends le controle du territoire adverse
 				System.out.println("Victoire de l'attaquant");
@@ -101,13 +102,31 @@ public class Player {
 	
 	//FONCTIONS UTILES A L'IA
 	
-     public double sigmoid(double x) {
-    	 return 1/(1+Math.exp(x));
-     }
+//     public double sigmoid(double x) {
+//    	 return 1/(1+Math.exp(x));
+//     }
+     
+	
+	public LinkedList<Territory> copy() {
+		LinkedList<Territory> copy = new LinkedList<Territory>();
+		 Iterator<Territory> it_ter = this.territories.iterator();
+		 while (it_ter.hasNext()) {
+			 Territory next = it_ter.next();
+			 copy.add(next.copy());
+		 }
+
+//				if (copy[i][j].dices != this.territories[i][j].dices ){
+//				System.out.println("--------- "+this.territories[i][j].dices + " copy --> " +copy[i][j].dices + " --------------" );}
+		
+		
+		
+		return copy;//copie des territoires (n'alt�re pas les territoires d'origine)
+	}
+	
 	 public double value( Player gamer_2, double alpha,LinkedList<Territory> territories1,LinkedList<Territory> territories2) { //plus c'est proche de 0 : désavantagé, plus c'est proche de 1 : avantagé
 			double inter_val_1 = this.intermediate_value(alpha,territories1);
 			double inter_val_2 = gamer_2.intermediate_value(alpha,territories2);
-			return sigmoid(inter_val_1 - inter_val_2) ;   // retourne la valeur associ�e � la position du gamer_1
+			return (inter_val_1 - inter_val_2)/(inter_val_1 + inter_val_2) ;   // retourne la valeur associ�e � la position du gamer_1
 		}// on pourrait, dans un cas avec 3+ joueurs, choisir la valeur de la position de gamer_1 comme la valeur min(k dans l'ensemble des joueurs ennemis){value(gamer_1, gamer_k)}
 	 
  
@@ -118,32 +137,6 @@ public class Player {
 			inter_value += -Math.pow(territory.dices-alpha,territory.dices-alpha)+10 ;
 		}
 		return inter_value;
-	}// je précise quels territories, car �a pourrait �tre d'autre plateaux que celui imm�diat du joueur (coups à l'avance de l'ia)
+	}// je précise quels territories, car ça pourrait être d'autre plateaux que celui immédiat du joueur (coups à l'avance de l'ia)
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
