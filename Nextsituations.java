@@ -4,69 +4,111 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class Nextsituations {   //permet de lister les dénouements possibles du tour d'un joueur
+public class Nextsituations {   //permet de lister les dÃ©nouements possibles du tour d'un joueur
 	 ArrayList<int[]> actions;
 	 ArrayList<Territory[][]> possible_nextboards;
 	 ArrayList<Double> transition_chances;
 	 Player gamer;
-	 
-
+//	 ArrayList<LinkedList<Territory>> gamer_territories; //les territoires du joueur
+//	 ArrayList<LinkedList<Territory>> ennemi_territories; //les territoires de l'ennemi
 		
-	 public Nextsituations(Player gamer, Board plateau) { //Renvoie les actions et plateaux résultants possibles avec leurs "probabilités" (transition)
+	 public Nextsituations(Player gamer, Board plateau) { //Renvoie les actions et plateaux rÃ©sultants possibles avec leurs "probabilitÃ©s" (transition)
 		// TODO Auto-generated constructor stub
-		 this.gamer = gamer;
+		 this.gamer = gamer; 
 			ArrayList<Territory[][]> next_positions = new ArrayList<Territory[][]>();
-			ArrayList<Double> transitions = new ArrayList<Double>();
+//			ArrayList<LinkedList<Territory>> gamer_territories = new ArrayList<LinkedList<Territory>>();
+//			this.gamer_territories = gamer_territories;
+			//ArrayList<Double> transitions = new ArrayList<Double>();
 			ArrayList<int[]> actions = new ArrayList<int[]>();
-			int k = 0;
-			int l = 0;
-			Double transi_victoire = 0.0;
-			for(Territory myTerritory :gamer.territories) {			
+//			int k = 0;
+//			int l = 0;
+			int save = 0;
+			//Double transi_victoire = 0.0;
+			//for(Territory myTerritory :gamer.territories) {	
+			for (int k = 0; k < plateau.territories.length; k++) {
+				for (int l = 0; l < plateau.territories[0].length; l++) {
 					for (int i = 0; i < plateau.territories.length; i++) {
 						for (int j = 0; j < plateau.territories[0].length; j++) {
-							if (gamer.canFight(myTerritory, plateau.territories[i][j])) { // Pour chaque territoire qu'on peut attaquer ce tour-ci
-								k = myTerritory.ligne;
-								l=myTerritory.colonne;
+							Territory myTerritory = plateau.territories[k][l];
+							if (gamer.canFight(myTerritory, plateau.territories[i][j]) ) { // Pour chaque territoire qu'on peut attaquer ce tour-ci
+								//							k = myTerritory.ligne;
+								//							l=myTerritory.colonne;								
+
 								actions.add(actions_tab(l,k,j,i,1)); //action avec 1 pour victoire
-								actions.add(actions_tab(l,k,j,i,0)); //action avec 0 pour défaite
-								next_positions.add(next_victory(plateau.copy(),k,l,i,j));
-								next_positions.add(next_defeat(plateau.copy(), k, l));
-								transi_victoire = transition(plateau.copy(),k,l,i,j);
-								transitions.add(transi_victoire); //transition pour victoire
-								transitions.add(1-transi_victoire); //transition pour défaite : pas obligatoire
+								actions.add(actions_tab(l,k,j,i,0)); //action avec 0 pour dÃ©faite
+								//							if (myTerritory.dices == 1) {
+								//								System.out.println("-------------------PROBLEM-----------------");
+								//							}
+								//save = myTerritory.dices;
+								//System.out.println("before : " +save);
+								next_positions.add(next_victory(plateau,k,l,i,j, gamer));
+								next_positions.add(next_defeat(plateau, k, l, i, j, gamer));
+								//transi_victoire = transition(plateau.copy(),k,l,i,j);
+								//transitions.add(transi_victoire); //transition pour victoire
+								//transitions.add(1-transi_victoire); //transition pour dÃ©faite : pas obligatoire
+
+
 							}
+						}
 					}	
 				}
 			}
 			this.possible_nextboards=next_positions;
-			this.transition_chances = transitions;
+			//this.transition_chances = transitions;
 			this.actions = actions;
-		}
-		
+	 }
+
 	
 	 
-		public Territory[][] next_defeat(Territory[][] copy, int myline, int mycolumn) {
+		public Territory[][] next_defeat(Board plateau, int myline, int mycolumn,int hisline, int hiscolumn, Player gamer) {
+			Territory[][] copy = plateau.copy();
 			copy[myline][mycolumn].dices = 1;
-			return copy; //modifs pour le cas de défaite
+//			LinkedList<Territory> gamer_ter = gamer.copy();// copy gamer_territories
+//			this.gamer_territories.add(gamer_ter);
+//			LinkedList<Territory> ennemi_ter = plateau.territories[hisline][hiscolumn].player.copy();// copy ennemi_territories
+//			this.ennemi_territories.add(ennemi_ter);
+			return copy; //modifs pour le cas de dÃ©faite
 		}
 		
-		public Territory[][] next_victory(Territory[][] copy,int myline, int mycolumn, int hisline, int hiscolumn) {
+		public Territory[][] next_victory( Board plateau,int myline, int mycolumn, int hisline, int hiscolumn,Player gamer) {
+			//plateau.territories[myline][mycolumn].dices = save;
+			//int lala = plateau.territories[myline][mycolumn].dices;
+			Territory[][] copy = plateau.copy();
+			//int lili = plateau.territories[myline][mycolumn].dices;
+//			for (int i = 0; i < copy.length; i++) {
+//				for (int j = 0; j < copy[0].length; j++) {
+//					copy[i][j].dices = plateau.territories[i][j].dices;					
+//				}
+//			}
 			copy[hisline][hiscolumn].dices = copy[myline][mycolumn].dices -1;
+			copy[hisline][hiscolumn].player = gamer;
+//			if (copy[hisline][hiscolumn].dices == 0) {
+//				System.out.println("lala :"+lala);
+//				System.out.println("lili :"+lili);
+//				System.out.println("myline :"+ myline +" mycolumn :" + mycolumn + " hisline :" + hisline +  " hiscolumn :" + hiscolumn);
+//				System.out.println(plateau.territories[myline][mycolumn].dices + "---> copy ----> "+ copy[myline][mycolumn].dices);
+//			}
 			copy[hisline][hiscolumn].player = copy[myline][mycolumn].player;
 			copy[myline][mycolumn].dices = 1;
+//			LinkedList<Territory> gamer_ter = gamer.copy();// copy gamer_territories
+//			gamer_ter.add(copy[hisline][hiscolumn]);
+//			this.gamer_territories.add(gamer_ter);
+//			LinkedList<Territory> ennemi_ter = plateau.territories[hisline][hiscolumn].player.copy();// copy ennemi_territories
+//			ennemi_ter.remove(copy[hisline][hiscolumn]);
+//			this.ennemi_territories.add(ennemi_ter);
 			
 			return copy; //modifs pour le cas de victoire
 		}
 
 		
-		public Double transition(Territory[][] copy,int myline, int mycolumn, int hisline, int hiscolumn) { // calcule la proba de victoire (donc d'atteindre cet état next_win_)
+		public Double transition(Territory[][] copy,int myline, int mycolumn, int hisline, int hiscolumn) { // calcule la proba de victoire (donc d'atteindre cet ï¿½tat next_win_)
 			int mydice = copy[myline][mycolumn].dices-1;
 			int hisdice = copy[hisline][hiscolumn].dices;
-			//l'espérance du lancer d'1 dé isolé est de 7/2
-			Double Emydice = Math.pow(7/2, mydice-1);//espérance de notre lancer
-			Double Ehisdice = Math.pow(7/2, hisdice);//espérance de son lancer
-			Double transition = 1/(1+Math.exp(Ehisdice-Emydice));  // ligne discutable : fonction sigmoid : renvoie une probabilité associée à Emydice-Ehisdice
-			return transition; //estimation discutable des chances d'accéder au tableau (A modifier : on mettra les vrais probas, car on peut les calculer)
+			//l'espï¿½rance du lancer d'1 dÃ© isolÃ© est de 7/2
+			Double Emydice = Math.pow(7/2, mydice-1);//espÃ©rance de notre lancer
+			Double Ehisdice = Math.pow(7/2, hisdice);//espÃ©rance de son lancer
+			Double transition = 1/(1+Math.exp(Ehisdice-Emydice));  // ligne discutable : fonction sigmoid : renvoie une probabilitÃ© associÃ©e Ã  Emydice-Ehisdice
+			return transition; //estimation discutable des chances d'accÃ©der au tableau (A modifier : on mettra les vrais probas, car on peut les calculer)
 		}
 		
 		
@@ -141,15 +183,23 @@ public class Nextsituations {   //permet de lister les dénouements possibles du 
 		 return chaine;
 	 }
 		
+	 
+	 public String toString_dices() {
+		 String chaine = "";
+		 for (Territory[][] territories : this.possible_nextboards) {
+			 for (Territory[] line : territories) {
+				 for(Territory ter : line) {
+					 if (ter != null) {
+					 chaine += ter.dices + "  ";
+					 } 
+					 else {
+						 System.out.println("bouh");
+					 }
+				 }
+			 }
+			 chaine += "<<<<<<<<<<<<<<<<<<<<<<<<<<<" + "\n" + "\n";
+		 }
+		 return chaine;
+	 }
 		
 }
-		
-
-
-
-
-
-
-
-
-
