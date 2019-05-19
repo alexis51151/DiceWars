@@ -20,9 +20,10 @@ public class IA {
 		this.numjoueur = numjoueur;
 		this.id = id;
 	}
-	public int[] IA_basique(Actions_graded actions) {  //A  partir d'une actions_graded, choisit l'action qui a la meilleure note
+	
+	public int[] IA_basique(Actions_graded actions) {  //A partir d'une actions_graded, choisit l'action qui a la meilleure note
 		int[] action_choice = new int[4];
-		double note = -1; //on est sûr qu'elle prendra l'une des valeur des notes des actions
+		double note = -1; //on est sï¿½r qu'elle prendra l'une des valeur des notes des actions
 		ArrayList<int[]> actions_possibilities = actions.actions;
 		ArrayList<Double> grades = actions.grades;
 		Iterator<Double> it_grades = grades.iterator();
@@ -40,20 +41,44 @@ public class IA {
 		}
 		return action_choice;
 	}
+	
+	public int[] IA_random(Actions_graded actions) {  //choisi au hasard une action parmi celles possibles
+		int[] action_choice = new int[4];
+		double note = -1; //on est sÃ»r qu'elle prendra l'une des valeur des notes des actions
+		ArrayList<int[]> actions_possibilities = actions.actions;
+		ArrayList<Double> grades = actions.grades;
+		Iterator<Double> it_grades = grades.iterator();
+		Iterator<int[]> it_actions = actions_possibilities.iterator();
+		int Size = actions_possibilities.size();
+		int random_int = (int) Math.floor(9*Size*Math.random()/10);
+		int[] action_possibility = it_actions.next();
+		double grade  =it_grades.next();
+		for (int i = 0; i < random_int; i++) {
+			action_possibility = it_actions.next();
+			grade  =it_grades.next();
+			}
+		action_choice = action_possibility;
+		return action_choice;
+	}
 
 	public void play(TextField textField,Button button, Board plateau, GraphicsContext gc, Stage stage,TaskDisplay tsk) {
 		// Main interaction method to fill the forms
-		Nextsituations nextsituations = new Nextsituations(plateau.gamers[0], plateau);
+		Nextsituations nextsituations = new Nextsituations(plateau.gamers[0], plateau );
 		Actions_graded actions_notees = new Actions_graded( nextsituations, plateau.gamers[1]);
 		int[] choix = this.IA_basique(actions_notees);
-		textField.setText(Integer.toString(choix[0]));
-		button.fire();
-		textField.setText(Integer.toString(choix[1]));
-		button.fire();
-		textField.setText(Integer.toString(choix[2]));
-		button.fire();
-		textField.setText(Integer.toString(choix[3]));
-		button.fire();
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				textField.setText(Integer.toString(choix[0]));
+				button.fire(); 
+				textField.setText(Integer.toString(choix[1]));
+				button.fire();
+				textField.setText(Integer.toString(choix[2]));
+				button.fire();
+				textField.setText(Integer.toString(choix[3]));
+				button.fire();
+			}
+		});
 		System.out.println("ACTION RETENUE"+ "\n");
 		System.out.println(this.tab_toString(choix));
 
@@ -61,18 +86,70 @@ public class IA {
 	
 	public void play2(TextField textField,Button button, Board plateau, GraphicsContext gc, Stage stage,TaskDisplay tsk) {
 		// Main interaction method to fill the forms
-		ChoicesTree choicestree = new ChoicesTree(plateau,1);
-		System.out.println(choicestree.racine.toString_boards()); // Affiche le plateau de départ
+		ChoicesTree choicestree = new ChoicesTree(plateau,0);
+		//System.out.println(choicestree.racine.toString_boards()); // Affiche le plateau de dï¿½part
 		choicestree.AddLeaves(choicestree.racine, 3, 1);
 		int[] choix = choicestree.action_retenue;
-		textField.setText(Integer.toString(choix[0]));
-		button.fire();
-		textField.setText(Integer.toString(choix[1]));
-		button.fire();
-		textField.setText(Integer.toString(choix[2]));
-		button.fire();
-		textField.setText(Integer.toString(choix[3]));
-		button.fire();
+		
+//		if (choix == null) {
+//			System.out.println("bouuuuuuuuuuuuuuuuuuuuuuuuhhhhhhhh");
+//			System.out.println(choicestree.racine.toString_boards());
+//			for (Iterator iterator = choicestree.racine.next.iterator(); iterator.hasNext();) {
+//				Leaf type = (Leaf) iterator.next();				
+//					System.out.println("type");
+//					System.out.println(type.toString_boards());
+//					for (Iterator iteratorbis = type.next.iterator(); iteratorbis.hasNext();) {
+//						Leaf yo = (Leaf) iteratorbis.next();
+//						System.out.println("yo");
+//						for (Iterator iteratorbisbis = yo.next.iterator(); iteratorbisbis.hasNext();) {
+//							Leaf nieh = (Leaf) iteratorbisbis.next();
+//							System.out.println("nieh");
+//			
+//						}
+//						
+//					}
+//				
+//			}
+//		}
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				textField.setText(Integer.toString(choix[0]));
+				button.fire();
+				textField.setText(Integer.toString(choix[1]));
+				button.fire();
+				textField.setText(Integer.toString(choix[2]));
+				button.fire();
+				textField.setText(Integer.toString(choix[3]));
+				button.fire();
+			}
+		});
+		System.out.println("ACTION RETENUE"+ "\n");
+		System.out.println(this.tab_toString(choix));
+
+	}
+	
+	//pour l'instant l'ia random est l'ia 1
+	public void playrandom(int idiarandom, TextField textField,Button button, Board plateau, GraphicsContext gc, Stage stage,TaskDisplay tsk) {
+		// Main interaction method to fill the forms
+		Nextsituations nextsituations = new Nextsituations(plateau.gamers[idiarandom], plateau);
+		Actions_graded actions_notees = new Actions_graded( nextsituations, plateau.gamers[(idiarandom+1)%2]);
+		int[] choix = this.IA_random(actions_notees);
+		Platform.runLater(new Runnable( ) {
+			@Override
+			public void run() {
+				textField.setText(Integer.toString(choix[0]));
+				button.fire();
+				textField.setText(Integer.toString(choix[1]));
+				button.fire();
+				textField.setText(Integer.toString(choix[2]));
+				button.fire();
+				textField.setText(Integer.toString(choix[3]));
+				button.fire();	
+			}
+			
+		});
 		System.out.println("ACTION RETENUE"+ "\n");
 		System.out.println(this.tab_toString(choix));
 
@@ -90,17 +167,3 @@ public class IA {
 
 	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

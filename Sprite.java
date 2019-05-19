@@ -12,7 +12,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.*;
 import javafx.scene.paint.Color ;
 import javafx.geometry.*;
-public class Sprite {
+public class Sprite{
 	double width;
 	double height;
 	int x;
