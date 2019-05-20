@@ -30,6 +30,12 @@ public class Sprite{
 		gc.setFill(this.color);
 		gc.fillRect(x, y, height, width);
 	}
+	void rendercircle(GraphicsContext gc) {
+		gc.setStroke(this.color);
+		gc.strokeOval(x, y, height, width);
+		
+
+	}
 	
 	void update(Color color) {
 		this.color = color;

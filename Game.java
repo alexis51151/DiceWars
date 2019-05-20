@@ -55,7 +55,7 @@ public class Game extends Application {
 		Game.ia = new IA(0,0);
 		Game.iabis = new IA(1,1);
 		// Basic UI parameters : window's height/width, title, and javafx's wrappers for handling scenes
-		double largeur = 900;
+		double largeur = 1500;
 		double hauteur = 600;
 		stage.setTitle("DiceWars");
 		stage.setAlwaysOnTop(true);
@@ -238,6 +238,7 @@ public class Game extends Application {
 						}
 					}
 					if (plateau.has_winner()) {
+						Thread.sleep(100);
 						System.out.println("Bravo au joueur "+ (idjoueur) + " qui a gagné!");
 				        // Deleting previous text boxes (prevent writing over previous dices numbers...)
 		        		 for(Iterator<Node> it=group.getChildren().iterator(); it.hasNext();) {

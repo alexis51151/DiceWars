@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ChoicesTree {
-	Leaf racine; // Arbre compos� de feuilles qui sont les plateaux associ�s � des actions du joueur ou de son adversaire
+	Leaf racine; // Arbre compos� de feuilles qui sont les plateaux associés à des actions du joueur ou de son adversaire
 	int numjoueur;
 	int[] action_retenue;
 	public Double best_grade;
@@ -12,7 +12,7 @@ public class ChoicesTree {
 	Float proba;
 	Float seuil_proba = 0f; 
 	float[][] probaMatrix = Probas.ProbaMatrix(8);
-	// Caract�ristiques du plateau initial (on ne s'int�resse qu'au tableau territories par la suite)
+	// Caractéristiques du plateau initial (on ne s'int�resse qu'au tableau territories par la suite)
 	public int gamers_number;
 	public int colonnes;
 	public int lignes;
@@ -22,10 +22,11 @@ public class ChoicesTree {
 	public int N;
 	public int nb_leaves;
 	public Player[] gamers; // liste des joueurs
+	ArrayList<ArrayList<Territory[][]>> Layers = new ArrayList<ArrayList<Territory[][]>>(); // Les couches de l'arbre (pour représentation)
 	
 	
 	public ChoicesTree(Board plateau, int numjoueur){ 
-		// Cr�ation de l'arbre des possibles plateaux pour le joueur n�numjoueur (algorithme r�cursif)
+		// Création de l'arbre des possibles plateaux pour le joueur n�numjoueur (algorithme r�cursif)
 		// Profondeur est la profondeur max (<-> nb de coups d'avance) que l'on pr�voit
 		this.numjoueur = numjoueur;
 		this.racine = new Leaf(null,null,plateau.territories,null,1);
@@ -46,7 +47,7 @@ public class ChoicesTree {
 	
 	public void AddLeaves(Leaf leaf,int profondeur,int parite) { // J'ai fait que le cas pour 2 joueurs pour l'instant (� faire : utiliser la parit� (initialis�e � 1) pour 2 fonctions de co�t) 
 		//System.out.println(">>>>>>>>>>>>>PROFONDEUR : " + profondeur);
-		auxboard.territories = leaf.copy(); //Seul �l�ment du board auquel on s'int�resse ici
+		auxboard.territories = leaf.copy(); //Seul élément du board auquel on s'int�resse ici
 //		for (Player gamer : auxboard.gamers) {
 //			gamer.territories = leaf.ajustGamerTerr(gamer);
 //		}
@@ -62,23 +63,17 @@ public class ChoicesTree {
 		Iterator<Double> it_grades = grades.iterator();
 		Iterator<int[]> it_actions = actions_possibilities.iterator();
 		Iterator<Territory[][]> it_boards = boards.iterator();
-		// On consid�re au max 8 d�s sur un territoire
+		// On considère au max 8 dés sur un territoire
 		if (profondeur != 0) {
-			while (it_actions.hasNext()) { // Cr�ation des feuilles associ�es au plateau de la feuille en param�tre de notre fonction
+			while (it_actions.hasNext()) { // Création des feuilles associées au plateau de la feuille en paramètre de notre fonction
 				int[] action_possibility = it_actions.next();
 				double grade  =it_grades.next();
 				Territory[][] board = it_boards.next();
-				// On cherche le nb de d�s sur territoires de d�part et d'arriv�e pour calculer la probabilit� du nouveau plateau
+				// On cherche le nb de dés sur territoires de d�part et d'arriv�e pour calculer la probabilité du nouveau plateau
 				int k = board[action_possibility[1]][action_possibility[0]].dices;
 				int n = board[action_possibility[3]][action_possibility[2]].dices;
-//				if (k==0 || n ==0) {
-//					System.out.println("BIZARRE");
-//					System.out.println("k: " + k);
-//					System.out.println("n: " + n);
-//				}
-				// On calcule la probabilit� d'avoir ce plateau (utilisation d'une m�thode d'estimateur statistique)
-				float proba = probaMatrix[k-1][n-1]; // Pas d'erreur car on a au moins un d� sur un territoire
-				//System.out.println("PROBAAAA : "+proba);
+				// On calcule la probabilité d'avoir ce plateau (utilisation d'une méthode d'estimateur statistique)
+				float proba = probaMatrix[k-1][n-1]; // Pas d'erreur car on a au moins un dé sur un territoire
 				if (leaf.probability*proba >= seuil_proba) {
 					//nb_dices(board);
 					float proba_totale = leaf.probability*proba*1000000;
@@ -87,12 +82,21 @@ public class ChoicesTree {
 					if ((numjoueur+parite)%2 == 1) {
 						new_leaf.update();
 					}
-					 // Rajouter les d�s pour le tour suivant
+					 // Rajouter les dés pour le tour suivant
 					leaf.next.add(new_leaf);
-					//System.out.println(profondeur);
 					nb_leaves +=1;
+					System.out.println(profondeur);
 					//System.out.println(new_leaf.toString_boards());
 					//System.out.println(new_leaf.action_toString());
+					try { // On regarde si on a besoin de la créer
+						Layers.get(profondeur);
+						Layers.get(profondeur).add(board);
+					}
+					catch (Exception e){ // Sinon, on créer la couche
+						ArrayList<Territory[][]> aux = new ArrayList<Territory[][]>();
+						aux.add(board);
+						Layers.add(aux);
+					}
 					AddLeaves(new_leaf,profondeur-1,(parite+1)%2);
 				}				
 			}
