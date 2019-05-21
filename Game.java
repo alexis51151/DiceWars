@@ -14,6 +14,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -27,11 +28,17 @@ public class Game extends Application {
 	static Player[] gamers;
 	Group group = new Group();
 	int idjoueur=1;
+	int idiarandom = 1; //numÃ©ro Ã  changer si on veut faire jouer le random en 0 ou en 1
 	static int nb_round=5;
 	Color[] liste_colors = {Color.BLUE,Color.RED,Color.GREEN,Color.PURPLE,Color.YELLOW,Color.ORANGE,Color.PINK,Color.LIGHTGREEN};
 	String[] liste_colors_string = {"bleu","rouge","vert","violet","jaune","orange","rose","vert clair"};
 	static Canvas canvas;
 	static IA ia;
+	static IA iabis;
+	int width = 100;
+	int xinit = 150;
+	int yinit = 100; 
+	GamesStats gamestats;
 	// Displaying UI
 	  public static void main(String[] args) {
 		  	
@@ -41,13 +48,15 @@ public class Game extends Application {
 	  
 	public ReturnClass initialize(Stage stage) {
 		// Initiliazing the board, with its players 
-		Game.plateau = new Board(3,2,2,8,5);
+		Game.plateau = new Board(6,4,2,30,5);
+		//Game.plateau = new Board(3,2,2,10,5);
 		Game.gamers=Game.plateau.gamers;
-		Game.nb_round = 5;
+		Game.nb_round = 40;
 		Game.ia = new IA(0,0);
+		Game.iabis = new IA(1,1);
 		// Basic UI parameters : window's height/width, title, and javafx's wrappers for handling scenes
-		double largeur = 697;
-		double hauteur = 520;
+		double largeur = 900;
+		double hauteur = 600;
 		stage.setTitle("DiceWars");
 		stage.setAlwaysOnTop(true);
 	    Scene scene = new Scene(group);
@@ -58,8 +67,8 @@ public class Game extends Application {
 	    GraphicsContext gc = canvas.getGraphicsContext2D();
         // Text to interact with the background tasks
 	    final Text text = new Text();    	    
-	    text.setY(310); 	
-	    text.setX(275);
+	    text.setY(527); 	
+	    text.setX(330);
 	    group.getChildren().add(text);
         TextField textField = new TextField();
         // Button to catch interactions when asked who to attack
@@ -70,24 +79,24 @@ public class Game extends Application {
             textField.setText("");
         });
         HBox hbox = new HBox(textField,button);
-        hbox.setLayoutY(330);  
-        hbox.setLayoutX(275);
+        hbox.setLayoutY(510);  
+        hbox.setLayoutX(350);
         group.getChildren().add(hbox);
         // Initializing territories' display
         Territory[][] displayTerritories = Game.plateau.territories;
         List<Sprite> rectangles = new ArrayList<Sprite>();
         List<Text> nbdices = new ArrayList<Text>();
+		Text idjoueurtext = new Text(2*xinit+75,yinit-10,"Tour du joueur nÂ°"+this.idjoueur + "(" + liste_colors_string[this.idjoueur] +")");
+		group.getChildren().add(idjoueurtext);
         for(int y=0;y<displayTerritories.length;y++) {
         	for(int x=0;x<displayTerritories[0].length;x++) {
         		// Displaying territories
-        		Sprite tempsprite = new Sprite(300+50*x,200+50*y,50,50,liste_colors[displayTerritories[y][x].player.id]);
+        		Sprite tempsprite = new Sprite(xinit+width*x,yinit+width*y,width,width,liste_colors[displayTerritories[y][x].player.id]);
         		rectangles.add(tempsprite);
         		tempsprite.render(gc);
         		// Displaying the number of dices for each territory
-        		Text temptext = new Text(325+50*x,230+50*y,Integer.toString(displayTerritories[y][x].dices));
+        		Text temptext = new Text(xinit+50+width*x,xinit+5+width*y,Integer.toString(displayTerritories[y][x].dices));
         		// Displaying who's the turn of 
-        		Text idjoueurtext = new Text(300,190,"Tour du joueur n°"+this.idjoueur + "(" + liste_colors_string[this.idjoueur] +")");
-        		group.getChildren().add(idjoueurtext);
         		group.getChildren().add(temptext);
         	}
         }
@@ -151,6 +160,8 @@ public class Game extends Application {
 			
         });
 			while (nb_round  > 0 && !plateau.has_winner()) {
+				System.out.println(" ");
+				System.out.println("----TOURS RESTANTS : "+nb_round + " ------"); 
 				idjoueur = 0;
 				while (idjoueur < gamers.length) {
 					//gestion du tour du joueur j
@@ -161,9 +172,32 @@ public class Game extends Application {
 							toPrint += "\n";
 							//System.out.println(toPrint); // Yet to be added to UI (in a text area)
 						// When all inputs have been set by one player
-						if(idjoueur==0) { // Here we call our IA; We are supposing for now that IA is player 0 
+							
+						//IA basique
+//						if(idjoueur==0) { // Here we call our IA; We are supposing for now that IA is player 0 
+//							System.out.println("TOUR DE IA 1");
+//							ia.play(this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
+//							Thread.sleep(100);
+//						}
+//						
+//						Random IA : on peut modifier l'id de l'ia avec idiarandom au dÃ©but du script de game
+//					    if(idjoueur==idiarandom) { // Here we call our random IA; We are supposing for now that IA is player 0 
+//							System.out.println("TOUR DE IA RANDOM");
+//							iabis.playrandom(idiarandom, this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
+//							Thread.sleep(100);
+
+//						}
+					    
+					    // IA utilisant l'algoritme de Monte Carlo
+						if(idjoueur==1) { // Here we call our IA; We are supposing for now that IA is player 1 
+							System.out.println("TOUR DE IA 2");
 							ia.play2(this.textField,this.button,Game.plateau,this.gc,this.stage,this); // Purpose : fill the territory to attack
+							Thread.sleep(100);
+
 						}
+//						
+////						
+						
 						if (k==4) {
 							if (gamers[idjoueur].canFight(plateau.territories[xy[1]][xy[0]], plateau.territories[xy[3]][xy[2]])) {
 								gamers[idjoueur].fightGlobal(plateau.territories[xy[1]][xy[0]], plateau.territories[xy[3]][xy[2]]);
@@ -181,17 +215,17 @@ public class Game extends Application {
 						        			 }
 						        		}
 						        		// Displaying who's the turn of 
-						        		Text idjoueurtext = new Text(300,190,"Tour du joueur n°"+(idjoueur+1) + "(" + liste_colors_string[(idjoueur+1)] +")");
+						        		Text idjoueurtext = new Text(2*xinit+75,yinit-10,"Tour du joueur "+(idjoueur+1) + "(" + liste_colors_string[(idjoueur+1)] +")");
 						        		group.getChildren().add(idjoueurtext);
 						        		 
 
 						        		 for(int x=0;x<displayTerritories[0].length;x++) {
 								        	for(int y=0;y<displayTerritories.length;y++) {
-								        		Sprite tempsprite = new Sprite(300+50*x,200+50*y,50,50,liste_colors[displayTerritories[y][x].player.id]);
+								        		Sprite tempsprite = new Sprite(xinit+width*x,yinit+width*y,width,width,liste_colors[displayTerritories[y][x].player.id]);
 								        		rectangles.add(tempsprite);
 								        		tempsprite.render(gc);
 								        		// Displaying the number of dices for each territory
-								        		Text temptext = new Text(325+50*x,230+50*y,Integer.toString(displayTerritories[y][x].dices));
+								        		Text temptext = new Text(xinit+50+width*x,yinit+5+width*y,Integer.toString(displayTerritories[y][x].dices));
 								        		group.getChildren().add(temptext);
 								        	}
 								        }
@@ -204,14 +238,15 @@ public class Game extends Application {
 						}
 					}
 					if (plateau.has_winner()) {
-						System.out.println("Bravo au joueur "+ (idjoueur-1) + " qui a gagné!");
+						Thread.sleep(100);
+						System.out.println("Bravo au joueur "+ (idjoueur) + " qui a gagnÃ©!");
 				        // Deleting previous text boxes (prevent writing over previous dices numbers...)
 		        		 for(Iterator<Node> it=group.getChildren().iterator(); it.hasNext();) {
 		        			 if(it.next() instanceof Text) {
 		        				it.remove();
 		        			 }
 		        		}
-			        	Text idjoueurtext = new Text(300,190,"Le joueur n°"+(idjoueur-1)+"a gagné!");
+			        	Text idjoueurtext = new Text(xinit,yinit-10,"Le joueur "+(idjoueur-1)+"a gagnÃ©!");
 			        	group.getChildren().add(idjoueurtext);
 				        System.out.println("test");
 				        stage.show();
@@ -219,12 +254,21 @@ public class Game extends Application {
 				}
 			// Update the number of dices after a turn
 			plateau.update();
+			nb_round -- ;
 			};
+			System.out.println("tessstt");
+			this.stop();
 			return null;
+		}
+		public void stop() {
+			// TODO Auto-generated method stub
+			System.out.println("tesssssssssssst");
+			gamestats.idgagnant=idjoueur-1;
+			Platform.exit();
 		}
 		
 	}
-	@Override
+	
 	public void start(Stage stage) throws Exception {
 		ReturnClass returnClass = initialize(stage);
 		TaskDisplay task = new TaskDisplay(returnClass.text,returnClass.button,returnClass.textField,returnClass.gc,returnClass.stage);
@@ -232,4 +276,7 @@ public class Game extends Application {
 		new Thread(task).start();
 		stage.show();
 	}
+	
+	
+	
 }

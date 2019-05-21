@@ -90,7 +90,7 @@ public class Board { // pour le moment, que des territoires carres
 	public void update() { // ajout 1 de partout sauf si > max_dices
 		for (Territory[] liste : this.territories) {
 			for (Territory ter : liste) {
-				if (ter.dices < this.max_dices) {
+				if (ter.dices < this.max_dices) { 
 					ter.dices++;
 				}
 			}
@@ -121,19 +121,34 @@ public class Board { // pour le moment, que des territoires carres
 	}
 	
 	   
-	public Territory[][] copy() {   //il ya avait aussi la fonction clone pour un objet, mais elle ne dupliquait pas les territoires
+	public Territory[][] copy() {   //il y avait aussi la fonction clone pour un objet, mais elle ne dupliquait pas les territoires
 		Territory[][] copy = new Territory[this.lignes][this.colonnes];
 		for (int i = 0; i < this.lignes; i++) {
 			for (int j = 0; j < this.colonnes; j++) {
 				copy[i][j] = (this.territories[i][j]).copy();
-			}
+//				if (copy[i][j].dices != this.territories[i][j].dices ){
+//				System.out.println("--------- "+this.territories[i][j].dices + " copy --> " +copy[i][j].dices + " --------------" );}
 		}
-		return copy;//copie des territoires (n'altère pas les territoires d'origine)
+		}
+		
+		return copy;//copie des territoires (n'altï¿½re pas les territoires d'origine)
+	}
+	
+	public String winner() {
+		int score1 = players_territories[0];
+		int score2 = players_territories[1];
+		String result = "";
+		if(score1 > score2) {
+			result = "-----Victoire du joueur 1-------";
+		}
+		else if(score1 < score2) {
+			result = "-----Victoire du joueur 2-------";
+		}
+		
+		else {
+			result = "-----Match nul-------";
+		}
+		return result;
 	}
 	
 }
-
-
-
-
-

@@ -48,5 +48,3 @@ public class GraphicDisplay extends Application {
 
 
 }
-
-
