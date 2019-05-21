@@ -95,7 +95,8 @@ public class Game extends Application {
         		rectangles.add(tempsprite);
         		tempsprite.render(gc);
         		// Displaying the number of dices for each territory
-        		Text temptext = new Text(xinit+50+width*x,xinit+5+width*y,Integer.toString(displayTerritories[y][x].dices));
+        		Text temptext = new Text(xinit+40+width*x,xinit+10+width*y,Integer.toString(displayTerritories[y][x].dices));
+        		temptext.setFont(Font.font ("Verdana", 40));
         		// Displaying who's the turn of 
         		group.getChildren().add(temptext);
         	}
@@ -225,7 +226,8 @@ public class Game extends Application {
 								        		rectangles.add(tempsprite);
 								        		tempsprite.render(gc);
 								        		// Displaying the number of dices for each territory
-								        		Text temptext = new Text(xinit+50+width*x,yinit+5+width*y,Integer.toString(displayTerritories[y][x].dices));
+								        		Text temptext = new Text(xinit+40+width*x,yinit+60+width*y,Integer.toString(displayTerritories[y][x].dices));
+								        		temptext.setFont(Font.font ("Verdana", 40));
 								        		group.getChildren().add(temptext);
 								        	}
 								        }
@@ -256,6 +258,7 @@ public class Game extends Application {
 			plateau.update();
 			nb_round -- ;
 			};
+			System.out.println(plateau.winner());
 			System.out.println("tessstt");
 			this.stop();
 			return null;
