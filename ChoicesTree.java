@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 public class ChoicesTree {
-	Leaf racine; // Arbre composé de feuilles qui sont les plateaux associés à des actions du joueur ou de son adversaire
+	Leaf racine; // Arbre composï¿½ de feuilles qui sont les plateaux associÃ©s Ã  des actions du joueur ou de son adversaire
 	int numjoueur;
 	int[] action_retenue;
 	public Double best_grade;
-	// Caractéristiques du plateau initial (on ne s'intéresse qu'au tableau territories par la suite)
+	Board auxboard;
+	Float proba;
+	float[][] probaMatrix ;
+	Float seuil_proba = 0.0f; 
+	// CaractÃ©ristiques du plateau initial (on ne s'intï¿½resse qu'au tableau territories par la suite)
 	public int gamers_number;
 	public int colonnes;
 	public int lignes;
@@ -18,65 +22,143 @@ public class ChoicesTree {
 	public int N;
 	public int nb_leaves;
 	public Player[] gamers; // liste des joueurs
+	ArrayList<ArrayList<Territory[][]>> Layers = new ArrayList<ArrayList<Territory[][]>>(); // Les couches de l'arbre (pour reprÃ©sentation)
 	
 	
-	public ChoicesTree(Board plateau, int numjoueur){ 
-		// Création de l'arbre des possibles plateaux pour le joueur n°numjoueur (algorithme récursif)
-		// Profondeur est la profondeur max (<-> nb de coups d'avance) que l'on prévoit
+	public ChoicesTree(Board plateau, int numjoueur, float[][] probaMatrix ){ 
+		// CrÃ©ation de l'arbre des possibles plateaux pour le joueur nï¿½numjoueur (algorithme rï¿½cursif)
+		// Profondeur est la profondeur max (<-> nb de coups d'avance) que l'on prï¿½voit
 		this.numjoueur = numjoueur;
-		this.racine = new Leaf(null,null,plateau.territories,null);
+		this.racine = new Leaf(null,null,plateau.territories,null,1);
 		this.gamers_number = plateau.gamers_number;
 		this.colonnes = plateau.colonnes;
 		this.lignes = plateau.lignes;
 		this.max_dices = plateau.max_dices;
+		this.probaMatrix = probaMatrix;
 		this.number_territory = plateau.number_territory;
 		this.players_territories = plateau.players_territories;
 		this.N = 8;
 		this.nb_leaves = 0;
 		this.gamers = plateau.gamers;
-		this.best_grade = 0.0;
+		this.best_grade = -10E20;
+		this.auxboard = new Board(this.colonnes,this.lignes,this.gamers_number,this.N,this.max_dices);
+
 		
 	}
 	
-	public void AddLeaves(Leaf leaf,int profondeur,int parite) { // J'ai fait que le cas pour 2 joueurs pour l'instant (à faire : utiliser la parité (initialisée à 1) pour 2 fonctions de coût) 
-		Board auxboard = new Board(colonnes,lignes,gamers_number,N,max_dices);
-		auxboard.territories = leaf.board; //Seul élément du board auquel on s'intéresse ici
-		Nextsituations nextsituations = new Nextsituations(gamers[(numjoueur+parite)%2], auxboard) ; // Pour k joueurs : changer %2 par %k
-		Actions_graded actions_notees = new Actions_graded(nextsituations, gamers[(numjoueur+parite)%2]); 
+	public void AddLeaves(Leaf leaf,int profondeur,int parite) { // J'ai fait que le cas pour 2 joueurs pour l'instant (ï¿½ faire : utiliser la paritï¿½ (initialisï¿½e ï¿½ 1) pour 2 fonctions de coï¿½t) 
+		//System.out.println(">>>>>>>>>>>>>PROFONDEUR : " + profondeur);
+		auxboard.territories = leaf.copy(); //Seul Ã©lÃ©ment du board auquel on s'intï¿½resse ici
+//		for (Player gamer : auxboard.gamers) {
+//			gamer.territories = leaf.ajustGamerTerr(gamer);
+//		}
+		
+		Nextsituations nextsituations = new Nextsituations(gamers[(numjoueur+parite)%2], auxboard,probaMatrix) ; // Pour k joueurs : changer %2 par %k
+//	    float[] best_probas = nextsituations.best_proba(1); //pour le nextsituation actuel
+//	    System.out.println("best proba :"+best_probas[0]);
+//	    if (seuil_proba >= best_probas[0]*leaf.probability) {
+//	    	this.seuil_proba = best_probas[0]*leaf.probability;
+//	    }
+		//System.out.println(nextsituations.actions_toString());
+		//System.out.println(nextsituations.toString_dices());
+		Actions_graded actions_notees = new Actions_graded(nextsituations, gamers[(numjoueur+parite+1)%2]); 
 		ArrayList<int[]> actions_possibilities = actions_notees.actions;
 		ArrayList<Double> grades = actions_notees.grades;
 		ArrayList<Territory[][]> boards = nextsituations.possible_nextboards;
 		Iterator<Double> it_grades = grades.iterator();
 		Iterator<int[]> it_actions = actions_possibilities.iterator();
 		Iterator<Territory[][]> it_boards = boards.iterator();
+		// On considÃ¨re au max 8 dÃ©s sur un territoire
 		if (profondeur != 0) {
-			while (it_actions.hasNext()) { // Création des feuilles associées au plateau de la feuille en paramtre de notre fonction
+			while (it_actions.hasNext()) { // CrÃ©ation des feuilles associÃ©es au plateau de la feuille en paramÃ¨tre de notre fonction
 				int[] action_possibility = it_actions.next();
 				double grade  =it_grades.next();
 				Territory[][] board = it_boards.next();
-				Leaf new_leaf = new Leaf(leaf,action_possibility,board,grade);
-				leaf.next.add(new_leaf);
-				nb_leaves +=1;
-				//System.out.println(new_leaf.toString_boards());
-				System.out.println(new_leaf.action_toString());
-				AddLeaves(new_leaf,profondeur-1,(parite+1)%2);
+				// On cherche le nb de dÃ©s sur territoires de dï¿½part et d'arrivï¿½e pour calculer la probabilitÃ© du nouveau plateau
+				int k = board[action_possibility[1]][action_possibility[0]].dices;
+				int n = board[action_possibility[3]][action_possibility[2]].dices;
+				// On calcule la probabilitÃ© d'avoir ce plateau (utilisation d'une mÃ©thode d'estimateur statistique)
+				float proba = probaMatrix[k-1][n-1]; // Pas d'erreur car on a au moins un dÃ© sur un territoire
+//				 System.out.println("best proba again :"+best_probas[0]);
+//				System.out.println("seuil :" + seuil_proba+" ours :"+leaf.probability + "action :"+proba +" pro :"+ profondeur);
+				if (leaf.probability*proba >= seuil_proba) {			
+					//nb_dices(board);
+					float proba_totale = leaf.probability*proba*100000;
+					System.out.println("proba_totale :"+proba_totale + " proba:"+proba + " prev :"+leaf.probability);
+					Leaf new_leaf = new Leaf(leaf,action_possibility,board,grade*proba_totale,proba_totale);
+					if ((numjoueur+parite)%2 == 1) {
+						new_leaf.update();
+					}
+					 // Rajouter les dÃ©s pour le tour suivant
+					leaf.next.add(new_leaf);
+					nb_leaves +=1;
+					//System.out.println(profondeur);
+					//System.out.println(new_leaf.toString_boards());
+					//System.out.println(new_leaf.action_toString());
+					try { // On regarde si on a besoin de la crÃ©er
+						Layers.get(profondeur);
+						Layers.get(profondeur).add(board);
+					}
+					catch (Exception e){ // Sinon, on crÃ©er la couche
+						ArrayList<Territory[][]> aux = new ArrayList<Territory[][]>();
+						aux.add(board);
+						Layers.add(aux);
+					}
+					AddLeaves(new_leaf,profondeur-1,(parite+1)%2);
+				}				
 			}
+			
 		}
 		else {
+			//System.out.println("bonjour");
+			//System.out.println(leaf.mark);
+			//System.out.println(" leaf : "+leaf.mark+" best :" + best_grade);
 			if (leaf.mark > best_grade) {
-				best_grade = leaf.mark;
-				action_retenue = leaf.action;
-				System.out.println("test");
+				//System.out.println("oh!");
+					best_grade = leaf.mark;
+				    this.findBestAction(leaf);
 			}
 		}
+		//System.out.println("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+	}
+	
+
+	
+	 public boolean appartient(float x, float[] tab) {
+		 boolean result = false;
+		 for (float f : tab) {
+			if (x == f) {
+				result = true;
+			}
+		}
+		 System.out.println("result");
+		 return result;
+	 }
+	 
+	public void findBestAction(Leaf leaf) {
+		while (leaf.previous.mark != null) {
+			leaf = leaf.previous;
+		}
+		this.action_retenue = leaf.action;
 	}
 	
 	public String toString_actions() {
 		String chaine = "";
-		chaine += " myabs :"+this.action_retenue[0] + " myord :"+this.action_retenue[1] +" hisabs :"+this.action_retenue[2] +" hisord :"+this.action_retenue[3] + "\n"+"note :"+this.best_grade + "\n"+"\n";  
+		if (this.action_retenue != null ) {
+			chaine += " myabs :"+this.action_retenue[0] + " myord :"+this.action_retenue[1] +" hisabs :"+this.action_retenue[2] +" hisord :"+this.action_retenue[3] + "\n"+"note :"+this.best_grade + "\n"+"\n";  
+		}
+		else {
+			chaine += "Pas d'action retenue : veuillez modifier le seuil de proba";
+		}
 		return(chaine);
+	}
+	
+	public static void nb_dices(Territory[][] board) {
+		for(int i =0; i <board.length;i++ ) {
+			for(int j =0; j < board[0].length;j++) {
+				System.out.println("En i="+i + " et j="+j + ", on a : " + board[i][j].dices+ "dï¿½s");
+			}
+		}
 	}
 		
 }
-
-
