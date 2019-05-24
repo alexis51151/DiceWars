@@ -12,7 +12,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.*;
 import javafx.scene.paint.Color ;
 import javafx.geometry.*;
-public class Sprite {
+public class Sprite{
 	double width;
 	double height;
 	int x;
@@ -29,6 +29,12 @@ public class Sprite {
 	void render(GraphicsContext gc){
 		gc.setFill(this.color);
 		gc.fillRect(x, y, height, width);
+	}
+	void rendercircle(GraphicsContext gc) {
+		gc.setStroke(this.color);
+		gc.strokeOval(x, y, height, width);
+		
+
 	}
 	
 	void update(Color color) {

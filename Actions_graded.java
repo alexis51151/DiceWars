@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class Actions_graded {  //renvoie une liste des actions possibles, avec les notes (grâce à nextsituations)
+public class Actions_graded {  //renvoie une liste des actions possibles, avec les notes (grï¿½ce ï¿½ nextsituations)
 	 ArrayList<int[]> actions;
 	 ArrayList<Double> grades;
+	 ArrayList<Double> gradesBasic; //include probability
 	 Player gamer;
 	 Player ennemy;
 	 
@@ -25,29 +26,32 @@ public class Actions_graded {  //renvoie une liste des actions possibles, avec l
 		
 	 
 
-	 Actions_graded(Nextsituations nextsituations, Player gamer2){ //note la meilleure action face à l'adversaire
-		 ArrayList<int[]> actions = new ArrayList<int[]>();
-		 ArrayList<Double> grades = new ArrayList<Double>();
+	 Actions_graded(Nextsituations nextsituations, Player gamer2){ //note les  actions rÃ©pertoriÃ©es par nextsituations, face Ã  un l'adversaire
+		 ArrayList<int[]> actions = new ArrayList<int[]>();    //liste des actions
+		 ArrayList<Double> grades = new ArrayList<Double>();   // liste des notes
+		 ArrayList<Double> grades_for_basic = new ArrayList<Double>();
 		 Player gamer = nextsituations.gamer;
 		 Double note = 0.0;
 		 ArrayList<int[]> actions_of_nextsituations = nextsituations.actions;
 		 ArrayList<Territory[][]> possible_nextboards = nextsituations.possible_nextboards;
-		 ArrayList<Double> transition_chances = nextsituations.transition_chances;
+		 ArrayList<Float> transition_chances = nextsituations.transition_chances;
 		 Iterator<Territory[][]> it_nextboards = possible_nextboards.iterator();
-		 Iterator<Double> it_transitions = transition_chances.iterator();
+		 Iterator<Float> it_transitions = transition_chances.iterator();
 		 Iterator<int[]> it_actions = actions_of_nextsituations.iterator();
 		 while (it_actions.hasNext()) {
 			 int[] action = it_actions.next();
 			 Territory[][] plateau = it_nextboards.next();
-			 Double proba_transi = it_transitions.next();
+			 Float proba_transi = it_transitions.next();
 			 if (action[4] == 1) {
 				LinkedList<Territory> territories1  = linked_list_territories(plateau , gamer );
 				LinkedList<Territory> territories2  = linked_list_territories(plateau , gamer2 );
-				note = nextsituations.gamer.value(gamer2, 4, territories1, territories2)*proba_transi;
+				note = nextsituations.gamer.value(gamer2, gamer2.plateau.max_dices-1, territories1, territories2); //*proba_transi si on la prend  en compte
 				actions.add(action);
 				grades.add(note);
+				grades_for_basic.add(note*proba_transi);
 			}
 		}
+		 this.gradesBasic = grades_for_basic;
 		 this.actions = actions;
 		 this.grades = grades;
 		 this.gamer = gamer;
